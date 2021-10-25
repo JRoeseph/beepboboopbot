@@ -1,17 +1,27 @@
 const mongoose = require('mongoose');
-const schema = require('./schema.js');
+const schema = require('./schema');
 
 class Connections {
     async init(streamerList) {
-        streamerList.forEach((streamer) => {
-            const connection = await mongoose.createConnection(`${process.env.MONGO_URL}${streamer}?${process.env.MONGO_QUERY_PARAMS}`)
-            this.streamers[streamer] = await connection.model('UserInfo', schema)
-        })
+        try {
+            this.streamers = {};
+            await mongoose.connect(process.env.MONGO_URL);
+            this.config = await mongoose.model('StreamerInfo', schema.streamer, 'StreamerInfo');
+            await Promise.all(streamerList.map(async (streamer) => {
+                this.streamers[streamer] = await mongoose.model(streamer, schema.user, streamer);
+            }));
+        } catch (err) {
+            console.error(`DB ERROR: ${err}`);
+        }
     }
 
-    getModel(streamer) {
+    getConfig() {
+        return this.config;
+    }
+
+    getStreamer(streamer) {
         return this.streamers[streamer]
     }
 }
 
-module.exports = Connections;
+module.exports = new Connections();
