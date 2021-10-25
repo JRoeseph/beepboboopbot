@@ -1,7 +1,7 @@
 {
   "name": "beepboboopbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "The chat bot for the Twitch channel JRoeseph",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^10.0.0",
+    "eslint": "^8.1.0",
     "tmi.js": "^1.8.5"
   }
 }
