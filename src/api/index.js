@@ -7,7 +7,7 @@ const initialize = async () => {
   app.get('/addBot', controllers.addBot);
   app.get('/removeBot', controllers.removeBot);
 
-  app.listen(8004);
+  app.listen(process.env.PORT || 8004);
 }
 
 module.exports = {initialize};
