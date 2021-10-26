@@ -5,6 +5,7 @@ const initialize = async () => {
   const app = express();
 
   app.get('/addBot', controllers.addBot);
+  app.get('/removeBot', controllers.removeBot);
 
   app.listen(8004);
 }

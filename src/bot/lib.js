@@ -26,7 +26,7 @@ const setCategory = (client, msgInfo) => {
 }
 
 const everySecond = (streamers) => {
-  streamers.forEach((streamer) => streamer.passTimeOnCommands());
+  streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
 }
 
 module.exports = {

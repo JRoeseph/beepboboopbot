@@ -1,15 +1,15 @@
 const lib = require('./lib');
 
 const onConnectedHandler = (client, addr, port, streamers) => {
-  setInterval(lib.everySecond.bind(undefined,streamers), 1000);
-  console.log(`* Connected to ${addr}:${port}, loaded for streamers ${streamers.map(streamer => streamer.username)}`);
+  setInterval(lib.everySecond.bind(undefined, streamers), 1000);
+  console.log(`* Connected to ${addr}:${port}, loaded for streamers ${streamers.getStreamers().map(streamer => streamer.username)}`);
 }
 
 const onMessageHandler = async (client, target, context, msg, self, streamers) => {
   try {
     if (self) return; 
 
-    const streamer = streamers.find((strmr) => `#${strmr.username.toLowerCase()}` === target)
+    const streamer = streamers.getStreamer(target.substring(1));
 
     // We use two regexes here because if there is a period we only want to go to the end of the sentence
     let imJoke = msg.match(/(^| )[iI]'?[mM][^.]*\./);

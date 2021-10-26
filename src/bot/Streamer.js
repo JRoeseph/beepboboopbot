@@ -2,35 +2,33 @@ const axios = require('axios');
 const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.REFRESH_TOKEN_ENCRYPTION_KEY)
 
 class Streamer {
   // Initialization for streamer on bot startup
-  async init(username, refreshToken) {
+  async init(username) {
     this.username = username;
     try {
       const streamerDocs = db.getConfig();
       const streamerConfig = await streamerDocs.findOne({username: this.username}).lean();
-      let startingCommands;
-      if (!streamerConfig) {
-        startingCommands = await this.preinit();
-      } else {
-        startingCommands = {}
-        streamerConfig.commands.forEach((command) => {
-          startingCommands[command.command] = {
-            // Here is where we check if the command has a function in lib
-            response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
-            modOnly: command.modOnly,
-            cooldown: command.cooldown,
-            currentCooldown: 0,
-          }
-        });
-      }
+      this.refreshToken = cryptr.decrypt(streamerConfig.encryptedRefreshToken);
+      const startingCommands = {}
+      streamerConfig.commands.forEach((command) => {
+        startingCommands[command.command] = {
+          // Here is where we check if the command has a function in lib
+          response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
+          modOnly: command.modOnly,
+          cooldown: command.cooldown,
+          currentCooldown: 0,
+        }
+      });
       this.commands = new Commands();
       this.commands.init(startingCommands);
       const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`, {
         headers: {
-          'Client-Id': 'y5o7q9tom9z1do6hi4466ttwr6vs8s',
-          'Authorization': `Bearer ${process.env.API_TOKEN}`,
+          'Client-Id': process.env.CLIENT_ID,
+          'Authorization': `Bearer ${process.env.CLIENT_SECRET}`,
         }
       });
       this.broadcasterId = idResponse.data.data[0].id;
@@ -48,71 +46,6 @@ class Streamer {
 
   passTimeOnCommands() {
     this.commands.passTime();
-  }
-
-  // Preinit runs when the streamer is not in the config DB, meaning this is the first time they've been initialized
-  async preinit() {
-    try {
-      const startingCommands = {
-        'dadJoke': {
-          response: lib.dadJoke,
-          modOnly: false,
-          cooldown: 300,
-          currentCooldown: 0,
-        },
-        '!ping': {
-          response: lib.ping,
-          modOnly: false,
-          cooldown: 60,
-          currentCooldown: 0,
-        },
-        '!setTitle': {
-          reponse: lib.setTitle,
-          modOnly: true,
-          cooldown: 0,
-          currentCooldown: 0,
-        },
-        '!setCategory': {
-          reponse: lib.setCategory,
-          modOnly: true,
-          cooldown: 0,
-          currentCooldown: 0,
-        }
-      };
-      const streamerDocs = db.getConfig();
-      await streamerDocs.create({
-        username: this.username,
-        commands: [
-          {
-            command: 'dadJoke',
-            response: '#dadJoke',
-            modOnly: false,
-            cooldown: 300,
-          },
-          {
-            command: '!ping',
-            response: '#ping',
-            modOnly: false,
-            cooldown: 60,
-          },
-          {
-            command: '!setTitle',
-            response: '#setTitle',
-            modOnly: true,
-            cooldown: 0,
-          },
-          {   
-            command: '!setCategory',
-            response: '#setCategory',
-            modOnly: true,
-            cooldown: 0,
-          }
-        ]
-      });
-        return startingCommands;
-      } catch (err) {
-        throw err
-    }
   }
 }
 
