@@ -83,13 +83,13 @@ class Streamers {
           },
           {
             command: '!addBot',
-            response: 'Want to add BeepBoBoopBot to your own channel? Click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com:8004/addBot&response_type=code&scope=channel:manage:broadcast',
+            response: 'Want to add BeepBoBoopBot to your own channel? Click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com/addBot&response_type=code&scope=channel:manage:broadcast',
             modOnly: false,
             cooldown: 60,
           },
           {
             command: '!removeBot',
-            response: 'To remove the bot, the broadcaster must click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com:8004/removeBot&response_type=code',
+            response: 'To remove the bot, the broadcaster must click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com/removeBot&response_type=code',
             modOnly: true,
             cooldown: 60,
           }
