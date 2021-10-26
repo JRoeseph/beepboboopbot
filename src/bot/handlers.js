@@ -1,14 +1,12 @@
 const lib = require('./lib');
 
 const onConnectedHandler = (client, addr, port, streamers) => {
-  console.log(`* Connected to ${addr}:${port}, loaded for streamers ${streamers}`);
+  setInterval(lib.everySecond.bind(undefined,streamers), 1000);
+  console.log(`* Connected to ${addr}:${port}, loaded for streamers ${streamers.map(streamer => streamer.username)}`);
 }
 
 const onMessageHandler = async (client, target, context, msg, self, streamers) => {
   try {
-    // We await streamers here since there is a chance if a message is sent before the init function in server.js
-    // is done running, so we want to make sure it's done here
-    await Promise.all(streamers);
     if (self) return; 
 
     const streamer = streamers.find((strmr) => `#${strmr.username.toLowerCase()}` === target)
@@ -30,7 +28,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
 
     // Obviously, if it's not a command we don't care
     if (!msg.startsWith('!')) return;
-    const commandName = msg.trim();
+    const commandName = msg.split(' ')[0];
     streamer.runCommand(commandName, client, {target, context, msg, self})
   } catch (err) {
     console.error(`HANDLER ERROR: ${err}`);

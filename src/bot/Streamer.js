@@ -1,3 +1,4 @@
+const axios = require('axios');
 const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
@@ -26,15 +27,22 @@ class Streamer {
             }
             this.commands = new Commands();
             this.commands.init(startingCommands);
+            const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`);
+            this.broadcasterId = idResponse.data.data[0].id;
         } catch (err) {
             console.error(`STREAMER ERROR: ${err}`);
         }
     }
 
     runCommand(command, client, msgInfo) {
+        if (!this.commands.doesCommandExist(command)) return;
         if (this.commands.hasPermission(command, msgInfo.context) && !this.commands.isOnCooldown(command)) {
-            this.commands.runCommand(command, client, msgInfo);
+            this.commands.runCommand(command, client, {...msgInfo, broadcasterId: this.broadcasterId});
         }
+    }
+
+    passTimeOnCommands() {
+        this.commands.passTime();
     }
 
     // Preinit runs when the streamer is not in the config DB, meaning this is the first time they've been initialized
@@ -45,6 +53,7 @@ class Streamer {
                     response: lib.dadJoke,
                     modOnly: false,
                     cooldown: 300,
+                    currentCooldown: 0,
                 },
                 '!ping': {
                     response: lib.ping,
