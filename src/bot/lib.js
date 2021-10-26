@@ -16,22 +16,13 @@ const ping = (client, msgInfo) => {
 }
 
 const setTitle = async (client, msgInfo) => {
-    const title = removeCommand(msgInfo.msg);
-    try {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-        await axios.patch(`https://api.twitch.tv/helix/channels?broadcaster_id=${msgInfo.broadcasterId}`, {title}, config);
-        console.log('* Executed "!setTitle" command');
-    } catch (err) {
-        console.error(`Failed to execute "!setTitle": ${err}`);
-    }
+    client.say(msgInfo.target, '!setTitle command not yet implemented');
+    console.log('* Executed "!setTitle" command');
 }
 
 const setCategory = (client, msgInfo) => {
-
+    client.say(msgInfo.target, '!setCategory command not yet implemented');
+    console.log('* Executed "!setCategory" command');
 }
 
 const everySecond = (streamers) => {

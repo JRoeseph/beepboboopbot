@@ -6,9 +6,6 @@ const axios = require('axios');
 
 const initialize = async () => {
     try {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${process.env.API_TOKEN}`;
-        axios.defaults.headers.common['Client-Id'] = 'y5o7q9tom9z1do6hi4466ttwr6vs8s';
-      
         const streamerList = process.env.STREAMER_LIST.split(',')
       
         const opts = {

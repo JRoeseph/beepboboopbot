@@ -27,7 +27,12 @@ class Streamer {
             }
             this.commands = new Commands();
             this.commands.init(startingCommands);
-            const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`);
+            const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`, {
+                headers: {
+                    'Client-Id': 'y5o7q9tom9z1do6hi4466ttwr6vs8s',
+                    'Authorization': `Bearer ${process.env.API_TOKEN}`,
+                }
+            });
             this.broadcasterId = idResponse.data.data[0].id;
         } catch (err) {
             console.error(`STREAMER ERROR: ${err}`);
