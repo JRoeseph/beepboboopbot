@@ -24,7 +24,7 @@ class Commands {
     return !this.commands[command].modOnly || context.mod || context.badges?.broadcaster === '1';
   }
 
-  runCommand(commandName, client, msgInfo) {
+  runCommand(commandName, client, msgInfo, streamer) {
     const command = this.commands[commandName];
     const response = command?.response;
     if (!response) {
@@ -33,7 +33,7 @@ class Commands {
         client.say(response);
         command.currentCooldown = command.cooldown;
     } else {
-        response(client, msgInfo)
+        response(client, msgInfo, streamer)
         command.currentCooldown = command.cooldown;
     }
   }

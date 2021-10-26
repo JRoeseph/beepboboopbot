@@ -1,6 +1,7 @@
 const db = require('../database');
 const Streamer = require('./Streamer');
 const axios = require('axios');
+const CryptoJS = require('crypto-js');
 
 class Streamers {
   async init() {
@@ -20,10 +21,7 @@ class Streamers {
   };
 
   getStreamer(username) { 
-    return this.streamers.find((streamer) => {
-      const existingUsername = streamer.username;
-      existingUsername.toLowerCase() === username.toLowerCase()
-    });
+    return this.streamers.find((streamer) => streamer.username === username);
   }
 
   async removeStreamer(code) {
@@ -53,9 +51,11 @@ class Streamers {
           }
         });
       const streamerInfo = db.getConfig();
+      const username = usernameResponse.data.data[0].login
+      const encryptedRefreshToken = await CryptoJS.AES.encrypt(tokenResponse.data.refresh_token, process.env.REFRESH_TOKEN_ENCRYPTION_KEY).toString()
       await streamerInfo.create({
-        username: usernameResponse.data.data[0].login,
-        encryptedRefreshToken: tokenResponse.data.refresh_token,
+        username,
+        encryptedRefreshToken,
         commands: [
           {
             command: 'dadJoke',
@@ -95,6 +95,9 @@ class Streamers {
           }
         ],
       });
+      const streamerObj = new Streamer();
+      await streamerObj.init(username);
+      this.streamers.push(streamerObj);
     } catch (err) {
       console.error(`ERROR ADDING STREAMER: ${err}`)
     }

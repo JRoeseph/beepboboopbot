@@ -2,8 +2,7 @@ const axios = require('axios');
 const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
-const Cryptr = require('cryptr');
-const cryptr = new Cryptr(process.env.REFRESH_TOKEN_ENCRYPTION_KEY)
+const CryptoJS = require('crypto-js');
 
 class Streamer {
   // Initialization for streamer on bot startup
@@ -12,7 +11,8 @@ class Streamer {
     try {
       const streamerDocs = db.getConfig();
       const streamerConfig = await streamerDocs.findOne({username: this.username}).lean();
-      this.refreshToken = cryptr.decrypt(streamerConfig.encryptedRefreshToken);
+      const decryptedBytes = await CryptoJS.AES.decrypt(streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
+      this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
       const startingCommands = {}
       streamerConfig.commands.forEach((command) => {
         startingCommands[command.command] = {
@@ -28,7 +28,7 @@ class Streamer {
       const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`, {
         headers: {
           'Client-Id': process.env.CLIENT_ID,
-          'Authorization': `Bearer ${process.env.CLIENT_SECRET}`,
+          'Authorization': `Bearer ${process.env.API_TOKEN}`,
         }
       });
       this.broadcasterId = idResponse.data.data[0].id;
@@ -40,7 +40,7 @@ class Streamer {
   runCommand(command, client, msgInfo) {
     if (!this.commands.doesCommandExist(command)) return;
     if (this.commands.hasPermission(command, msgInfo.context) && !this.commands.isOnCooldown(command)) {
-      this.commands.runCommand(command, client, {...msgInfo, broadcasterId: this.broadcasterId});
+      this.commands.runCommand(command, client, msgInfo, this);
     }
   }
 

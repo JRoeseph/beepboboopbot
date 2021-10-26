@@ -14,7 +14,7 @@ const initialize = async () => {
         password: process.env.OAUTH_TOKEN,
       },
       // We spread and reform the array here so it is a copy of the array, because tmi is destructive with the array
-      channels: [...streamers.getStreamers()]
+      channels: [...streamers.getStreamers().map((streamer) => streamer.username)]
     };
     
     const client = new tmi.client(opts);
