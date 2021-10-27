@@ -6,6 +6,14 @@ const CryptoJS = require('crypto-js');
 class Streamers {
   async init() {
     const streamerInfo = db.getConfig();
+    let query = {}
+    if (process.env.DEV_MODE === 'true') {
+      query.username = 'beepboboopbot';
+    } else {
+      query.username = {
+        $ne: 'beepboboopbot',
+      }
+    }
     const streamerDocs = await streamerInfo.find({}).lean();
     this.streamers = [];
 

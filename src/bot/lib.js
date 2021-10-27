@@ -62,9 +62,15 @@ const setCategory = async (client, msgInfo, streamer) => {
   }
 }
 
-
+// THEORETICALLY this should never exceed 3600, since Heroku is set to restart our app every hour
+let secondsSinceStart = 0;
 const everySecond = (streamers) => {
-    streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
+  secondsSinceStart++;
+  if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300) {
+    // This doesn't need to be done syncronously, it just needs to get done to prevent our bot from going to sleep on Heroku
+    axios.get('http://beepboboopbot.herokuapp.com');
+  }
+  streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
 }
 
 module.exports = {
