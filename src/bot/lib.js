@@ -6,8 +6,8 @@ const removeCommand = (message) => {
 }
 
 const dadJoke = (client, msgInfo, streamer) => {
-  if (msgInfo.msg.startsWith(' ')) msgInfo.msg = msgInfo.msg.substring(1);
-  const nameFirst = msgInfo.msg.substring(msgInfo.msg.indexOf(' ')+1);
+  const mindex = msgInfo.msg.indexOf('m');
+  const nameFirst = msgInfo.msg.substring(mindex+1);
   const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
   client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
   console.log(`* ${msgInfo.context.username} just got dad joked`)
