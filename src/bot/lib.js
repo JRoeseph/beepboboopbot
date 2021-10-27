@@ -66,7 +66,7 @@ let secondsSinceLaunch = 0;
 const everySecond = (streamers) => {
   secondsSinceLaunch++;
   if (secondsSinceLaunch === 10) {
-    process.exit(1);
+    process.exit(0);
   } else {
     streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
   }
