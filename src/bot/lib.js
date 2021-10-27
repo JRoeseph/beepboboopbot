@@ -62,8 +62,14 @@ const setCategory = async (client, msgInfo, streamer) => {
   }
 }
 
+let secondsSinceLaunch = 0;
 const everySecond = (streamers) => {
-  streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
+  secondsSinceLaunch++;
+  if (secondsSinceLaunch === 10) {
+    process.exit(1);
+  } else {
+    streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
+  }
 }
 
 module.exports = {
