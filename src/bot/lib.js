@@ -64,7 +64,7 @@ const setCategory = async (client, msgInfo, streamer) => {
 
 // THEORETICALLY this should never exceed 3600, since Heroku is set to restart our app every hour
 let secondsSinceStart = 0;
-const everySecond = (streamers) => {
+const everySecond = async (streamers) => {
   secondsSinceStart++;
   if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300 === 0) {
     try {
