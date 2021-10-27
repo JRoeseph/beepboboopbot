@@ -29,8 +29,9 @@ class Commands {
     const response = command?.response;
     if (!response) {
         console.log(`* Unknown command ${commandName}`);
-      } else if (typeof(response) === String) {
-        client.say(response);
+        // Why is string lowercase what is wrong with you JavaScript?!?!?
+      } else if (typeof(response) === 'string') {
+        client.say(msgInfo.target, response);
         command.currentCooldown = command.cooldown;
     } else {
         response(client, msgInfo, streamer)

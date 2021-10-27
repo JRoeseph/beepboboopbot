@@ -29,7 +29,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
     // Obviously, if it's not a command we don't care
     if (!msg.startsWith('!')) return;
     const commandName = msg.split(' ')[0];
-    streamer.runCommand(commandName, client, {target, context, msg, self})
+    streamer.runCommand(commandName.toLowerCase(), client, {target, context, msg, self})
   } catch (err) {
     console.error(`HANDLER ERROR: ${err}`);
   }

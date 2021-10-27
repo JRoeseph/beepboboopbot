@@ -67,8 +67,8 @@ const setCategory = async (client, msgInfo, streamer) => {
 const resetDefaultCommands = async (client, msgInfo, streamer) => {
   const streamerInfo = db.getConfig();
   const streamerConfig = await streamerInfo.findOne({username: streamer.username});
-  const newCommandList = streamerConfig.commands.filter((command) => !command.defaultCommand)
-  newCommandList.concat([
+  const nonDefaults = streamerConfig.commands.filter((command) => !command.defaultCommand)
+  const newCommandList = nonDefaults.concat([
     {
       command: 'dadjoke',
       response: '#dadJoke',
@@ -122,6 +122,8 @@ const resetDefaultCommands = async (client, msgInfo, streamer) => {
   streamerConfig.commands = newCommandList;
   await streamerConfig.save();
   streamer.syncCommands(streamerConfig);
+  client.say(msgInfo.target, `All default commands have been removed and re-added`);
+  console.log('* Executed "!resetDefaultCommands" command');
 }
 
 // THEORETICALLY this should never exceed 3600, since Heroku is set to restart our app every hour
