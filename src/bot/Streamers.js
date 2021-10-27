@@ -14,7 +14,7 @@ class Streamers {
         $ne: 'beepboboopbot',
       }
     }
-    const streamerDocs = await streamerInfo.find({}).lean();
+    const streamerDocs = await streamerInfo.find(query).lean();
     this.streamers = [];
 
     await Promise.all(streamerDocs.map(async (doc) => {
