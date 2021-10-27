@@ -1,6 +1,6 @@
 const axios = require('axios');
 const db = require('../database');
-const { streamer } = require('../database/schema');
+const constants = require('./constants')
 
 // This is janky, but it avoids a circular dependency
 let streamers;
@@ -77,57 +77,7 @@ const resetDefaultCommands = async (client, msgInfo, streamer) => {
   const streamerInfo = db.getConfig();
   const streamerConfig = await streamerInfo.findOne({username: streamer.username});
   const nonDefaults = streamerConfig.commands.filter((command) => !command.defaultCommand)
-  const newCommandList = nonDefaults.concat([
-    {
-      command: 'dadjoke',
-      response: '#dadJoke',
-      modOnly: false,
-      cooldown: 300,
-      defaultCommand: true,
-    },
-    {
-      command: '!ping',
-      response: '#ping',
-      modOnly: false,
-      cooldown: 60,
-      defaultCommand: true,
-    },
-    {
-      command: '!settitle',
-      response: '#setTitle',
-      modOnly: true,
-      cooldown: 0,
-      defaultCommand: true,
-    },
-    {   
-      command: '!setcategory',
-      response: '#setCategory',
-      modOnly: true,
-      cooldown: 0,
-      defaultCommand: true,
-    },
-    {
-      command: '!addbot',
-      response: 'Want to add BeepBoBoopBot to your own channel? Click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com/addBot&response_type=code&scope=channel:manage:broadcast',
-      modOnly: false,
-      cooldown: 60,
-      defaultCommand: true,
-    },
-    {
-      command: '!removebot',
-      response: 'To remove the bot, the broadcaster must click this link: https://id.twitch.tv/oauth2/authorize?client_id=y5o7q9tom9z1do6hi4466ttwr6vs8s&redirect_uri=https://beepboboopbot.herokuapp.com/removeBot&response_type=code',
-      modOnly: true,
-      cooldown: 60,
-      defaultCommand: true,
-    },
-    {
-      command: '!resetdefaultcommands',
-      response: '#resetDefaultCommands',
-      modOnly: true,
-      cooldown: 0,
-      defaultCommand: true,
-    }
-  ]);
+  const newCommandList = nonDefaults.concat(constants.defaultCommands);
   streamerConfig.commands = newCommandList;
   await streamerConfig.save();
   streamer.syncCommands(streamerConfig);
