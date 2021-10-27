@@ -22,7 +22,7 @@ class Streamer {
       });
       this.broadcasterId = idResponse.data.data[0].id;
     } catch (err) {
-      console.error(`STREAMER ERROR: ${err}`);
+      console.error(`STREAMER INIT ERROR: ${err}`);
     }
   }
 
