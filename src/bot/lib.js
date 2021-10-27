@@ -38,6 +38,8 @@ const setTitle = async (client, msgInfo, streamer) => {
 }
 
 const setCategory = async (client, msgInfo, streamer) => {
+  //TODO: Fix special characters for URL friendly escape characters (N++)
+  //TODO: Catch error for category not found
   const category = removeCommand(msgInfo.msg);
   try {
     const categoryResponse = await axios.get(`https://api.twitch.tv/helix/games?name=${category}`, {
