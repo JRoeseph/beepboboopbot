@@ -10,6 +10,7 @@ const StreamerInfo = new Schema({
     response: String,
     modOnly: Boolean,
     cooldown: Number,
+    defaultCommand: Boolean,
   }],
 });
 

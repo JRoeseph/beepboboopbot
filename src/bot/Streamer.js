@@ -13,18 +13,7 @@ class Streamer {
       const streamerConfig = await streamerDocs.findOne({username: this.username}).lean();
       const decryptedBytes = await CryptoJS.AES.decrypt(streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
-      const startingCommands = {}
-      streamerConfig.commands.forEach((command) => {
-        startingCommands[command.command] = {
-          // Here is where we check if the command has a function in lib
-          response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
-          modOnly: command.modOnly,
-          cooldown: command.cooldown,
-          currentCooldown: 0,
-        }
-      });
-      this.commands = new Commands();
-      this.commands.init(startingCommands);
+      this.syncCommands(streamerConfig);
       const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`, {
         headers: {
           'Client-Id': process.env.CLIENT_ID,
@@ -46,6 +35,21 @@ class Streamer {
 
   passTimeOnCommands() {
     this.commands.passTime();
+  }
+
+  async syncCommands(streamerConfig) {
+    const startingCommands = {}
+    streamerConfig.commands.forEach((command) => {
+      startingCommands[command.command] = {
+        // Here is where we check if the command has a function in lib
+        response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
+        modOnly: command.modOnly,
+        cooldown: command.cooldown,
+        currentCooldown: 0,
+      }
+    });
+    this.commands = new Commands();
+    this.commands.init(startingCommands);
   }
 }
 
