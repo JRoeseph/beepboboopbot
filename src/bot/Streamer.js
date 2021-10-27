@@ -37,7 +37,7 @@ class Streamer {
     this.commands.passTime();
   }
 
-  async syncCommands(streamerConfig) {
+  syncCommands(streamerConfig) {
     const startingCommands = {}
     streamerConfig.commands.forEach((command) => {
       startingCommands[command.command] = {
