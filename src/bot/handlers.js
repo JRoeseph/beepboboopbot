@@ -19,7 +19,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
       streamer.runCommand('dadJoke', client, {target, context, msg: imJoke[0], self});
       return;
     } else {
-      imJoke = msg.match(/(^| )[iI]'?[mM][^.]*/);
+      imJoke = msg.match(/(^| )[iI]'?[mM] [^.]*/);
       if (imJoke) {
         streamer.runCommand('dadJoke', client, {target, context, msg: imJoke[0], self});
         return;
