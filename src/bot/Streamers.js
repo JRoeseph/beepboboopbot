@@ -123,6 +123,10 @@ class Streamers {
       console.error(`ERROR ADDING STREAMER: ${err}`)
     }
   }
+
+  addClients(client) {
+    this.streamers.forEach((streamer) => streamer.addClient(client));
+  }
 }
 
 module.exports = new Streamers();

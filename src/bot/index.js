@@ -1,6 +1,7 @@
 const tmi = require('tmi.js');
 const handlers = require('./handlers.js')
 const streamers = require('./Streamers');
+const lib = require('./lib');
 const db = require('../database');
 
 const initialize = async () => {
@@ -33,6 +34,8 @@ const initialize = async () => {
 
     // Connect to Twitch:
     client.connect();
+    streamers.addClients(client);
+    lib.setStreamers(streamers);
   } catch (err) {
       console.error(`BOT INIT ERROR: ${err}`)
   }

@@ -1,6 +1,12 @@
 const axios = require('axios');
 const db = require('../database');
+const { streamer } = require('../database/schema');
 
+// This is janky, but it avoids a circular dependency
+let streamers;
+const setStreamers = (streamersParam) => {
+  streamers = streamersParam;
+}
 const removeCommand = (message) => {
   return message.split(' ').splice(1).join(' ');
 }
@@ -129,6 +135,41 @@ const resetDefaultCommands = async (client, msgInfo, streamer) => {
   console.log('* Executed "!resetDefaultCommands" command');
 }
 
+const activeChatters = {};
+const grantXp = () => {
+  const users = Object.keys(activeChatters);
+  users.forEach((user) => {
+    const streams = Object.keys(activeChatters[user]);
+    let xp;
+    switch(streams.length) {
+      case 1:
+        xp = Math.floor(Math.random()*2)+4;
+        break;
+      case 2:
+        xp = 2;
+        break;
+      case 3:
+        xp = 1;
+        break;
+      default:
+        xp = 0;
+        break;
+    }
+    streams.forEach((stream) => {
+      const streamer = streamers.getStreamer(stream);
+      activeChatters[user][stream]--;
+      if (activeChatters[user][stream] === 0) {
+        delete activeChatters[user][stream];
+      }
+      if (xp > 0) {
+        streamer.addXp(user, xp);
+      }
+    })
+    if (Object.keys(activeChatters[user]).length === 0) {
+      delete activeChatters[user];
+    }
+  })
+}
 // THEORETICALLY this should never exceed 3600, since Heroku is set to restart our app every hour
 let secondsSinceStart = 0;
 const everySecond = async (streamers) => {
@@ -140,7 +181,16 @@ const everySecond = async (streamers) => {
       console.log('Refreshed heroku');
     }
   }
+  if (secondsSinceStart % 60 === 0) {
+    grantXp();
+  }
   streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
+}
+
+const setActive = (user_id, username, channel) => {
+  const newObj = {};
+  newObj[channel] = 10;
+  activeChatters[`${user_id}#${username}`] = newObj;
 }
 
 module.exports = {
@@ -150,4 +200,6 @@ module.exports = {
   setCategory,
   everySecond,
   resetDefaultCommands,
+  setActive,
+  setStreamers,
 }
