@@ -66,9 +66,12 @@ const setCategory = async (client, msgInfo, streamer) => {
 let secondsSinceStart = 0;
 const everySecond = (streamers) => {
   secondsSinceStart++;
-  if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300) {
-    // This doesn't need to be done syncronously, it just needs to get done to prevent our bot from going to sleep on Heroku
-    axios.get('http://beepboboopbot.herokuapp.com');
+  if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300 === 0) {
+    try {
+      await axios.get('http://beepboboopbot.herokuapp.com');
+    } catch (err) {
+      console.log('Refreshed heroku');
+    }
   }
   streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());
 }
