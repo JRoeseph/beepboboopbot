@@ -9,6 +9,7 @@ class Streamer {
   // Initialization for streamer on bot startup
   async init(broadcaster_id) {
     this.broadcaster_id = broadcaster_id;
+    this.isLive = true;
     try {
       const streamerDocs = db.getConfig();
       this.userInfo = db.getStreamer(broadcaster_id);

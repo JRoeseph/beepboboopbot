@@ -127,8 +127,30 @@ const grantXp = () => {
     }
   })
 }
+
+const checkIfLive = async (streamers) => {
+  try {
+    const streamersArray = streamers.getStreamers();
+    const streamerQueryParam = streamersArray.reduce((string, streamer) => {
+      return string + `${streamer.broadcaster_id},` 
+    }, '?user_id=')
+    const streamsInfo = await axios.get(`https://api.twitch.tv/helix/streams${streamerQueryParam.substring(0, streamerQueryParam.length-1)}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.API_TOKEN}`,
+        'Client-Id': process.env.CLIENT_ID,
+      }
+    })
+    const liveStreams = []
+    streamsInfo.data.data.forEach((streamer)=>liveStreams.push(streamer.user_id));
+    streamersArray.forEach((streamer) => streamer.isLive = liveStreams.includes(streamer.broadcaster_id));
+  } catch (err) {
+    console.error(`ERROR CHECKING IF LIVE: ${err}`)
+  }
+}
+
 // THEORETICALLY this should never exceed 3600, since Heroku is set to restart our app every hour
-let secondsSinceStart = 0;
+// This starts at -1 to make sure on startup it checks for live channels
+let secondsSinceStart = -1;
 const everySecond = async (streamers) => {
   secondsSinceStart++;
   // This is something only the Heroku app needs to do, and that is ping itself so it doesn't fall asleep
@@ -140,6 +162,7 @@ const everySecond = async (streamers) => {
     }
   }
   if (secondsSinceStart % 60 === 0) {
+    checkIfLive(streamers);
     grantXp();
   }
   streamers.getStreamers().forEach((streamer) => streamer.passTimeOnCommands());

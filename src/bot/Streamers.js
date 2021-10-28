@@ -18,6 +18,7 @@ class Streamers {
     const streamerDocs = await streamerInfo.find(query).lean();
     this.streamers = [];
 
+    //TODO: Move axios call to get usernames here so there is only one call, then also pass in username to init
     await Promise.all(streamerDocs.map(async (doc) => {
       const streamerObj = new Streamer();
       await streamerObj.init(doc.broadcaster_id);
@@ -40,6 +41,7 @@ class Streamers {
 
   async removeStreamer(code) {
     const tokenResponse = await axios.post(`https://id.twitch.tv/oauth2/token?code=${code}&client_secret=${process.env.CLIENT_SECRET}&client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}addBot&grant_type=authorization_code`)
+    //TODO: Check if this second call is needed
     const usernameResponse = await axios.get(`https://api.twitch.tv/helix/users`, 
       {
         headers: {
@@ -51,7 +53,10 @@ class Streamers {
     const username = usernameResponse.data.data[0].login;
     await streamerInfo.deleteOne({username});
     const streamerIndex = this.streamers.find((streamer) => {streamer.username === username});
+    await this.streamers[streamerIndex].getUsers().drop();
+    delete this.streamers[streamerIndex];
     this.streamers.splice(streamerIndex, 1);
+    //TODO: Drop corresponding collection
   }
 
   async addStreamer(code) {

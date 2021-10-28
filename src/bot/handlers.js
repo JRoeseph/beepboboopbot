@@ -8,9 +8,10 @@ const onConnectedHandler = (client, addr, port, streamers) => {
 const onMessageHandler = async (client, target, context, msg, self, streamers) => {
   try {
     if (self) return; 
+    const streamer = streamers.getStreamer(target.substring(1));
+    if (!streamer.isLive && process.env.DEV_MODE === 'false') return;
 
     lib.setActive(context['user-id'], context.username, target.substring(1))
-    const streamer = streamers.getStreamer(target.substring(1));
 
     // We use two regexes here because if there is a period we only want to go to the end of the sentence
     let imJoke = msg.match(/(^| )[iI]('?[mM]| [aA][mM]) [\w ]+[^\w ]/);
