@@ -29,7 +29,7 @@ const setTitle = async (client, msgInfo, streamer) => {
   try {
     const accessTokenResponse = await axios.post(`https://id.twitch.tv/oauth2/token?grant_type=refresh_token&refresh_token=${streamer.refreshToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`);
     const accessToken = accessTokenResponse.data.access_token;
-    await axios.patch(`https://api.twitch.tv/helix/channels?broadcaster_id=${streamer.broadcasterId}`, {title},
+    await axios.patch(`https://api.twitch.tv/helix/channels?broadcaster_id=${streamer.broadcaster_id}`, {title},
     {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -58,7 +58,7 @@ const setCategory = async (client, msgInfo, streamer) => {
     const game_id = categoryResponse.data.data[0].id;
     const accessTokenResponse = await axios.post(`https://id.twitch.tv/oauth2/token?grant_type=refresh_token&refresh_token=${streamer.refreshToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`);
     const accessToken = accessTokenResponse.data.access_token;
-    await axios.patch(`https://api.twitch.tv/helix/channels?broadcaster_id=${streamer.broadcasterId}`, {game_id},
+    await axios.patch(`https://api.twitch.tv/helix/channels?broadcaster_id=${streamer.broadcaster_id}`, {game_id},
     {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -71,6 +71,10 @@ const setCategory = async (client, msgInfo, streamer) => {
   } catch (err) {
     console.error(`ERROR CHANGING CATEGORIES: ${err}`)
   }
+}
+
+const getLevel = async (client, msgInfo, streamer) => {
+  const userInfo = await streamer.getUserLevel(msgInfo.context['user-id']);
 }
 
 const resetDefaultCommands = async (client, msgInfo, streamer) => {
@@ -90,6 +94,7 @@ const grantXp = () => {
   const users = Object.keys(activeChatters);
   users.forEach((user) => {
     const streams = Object.keys(activeChatters[user]);
+    // Here we want to change the amount of xp they get depending on the number of streams they're in
     let xp;
     switch(streams.length) {
       case 1:
@@ -106,6 +111,7 @@ const grantXp = () => {
         break;
     }
     streams.forEach((stream) => {
+      // Here we decrement and remove the user from the activeChatters list if they are zeroed out
       const streamer = streamers.getStreamer(stream);
       activeChatters[user][stream]--;
       if (activeChatters[user][stream] === 0) {
@@ -124,6 +130,7 @@ const grantXp = () => {
 let secondsSinceStart = 0;
 const everySecond = async (streamers) => {
   secondsSinceStart++;
+  // This is something only the Heroku app needs to do, and that is ping itself so it doesn't fall asleep
   if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300 === 0) {
     try {
       await axios.get('http://beepboboopbot.herokuapp.com');
@@ -138,6 +145,7 @@ const everySecond = async (streamers) => {
 }
 
 const setActive = (user_id, username, channel) => {
+  if (username === channel) return;
   const newObj = {};
   newObj[channel] = 10;
   activeChatters[`${user_id}#${username}`] = newObj;
@@ -152,4 +160,5 @@ module.exports = {
   resetDefaultCommands,
   setActive,
   setStreamers,
+  getLevel,
 }

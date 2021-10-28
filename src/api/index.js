@@ -6,6 +6,7 @@ const initialize = async () => {
 
   app.get('/addBot', controllers.addBot);
   app.get('/removeBot', controllers.removeBot);
+  app.get('/:streamer/leaderboard', controllers.leaderboard);
 
   app.listen(process.env.PORT || 8004);
 }

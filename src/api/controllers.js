@@ -13,7 +13,12 @@ const removeBot = (req, res, next) => {
   res.status(200).sendFile(path.join(__dirname, '/removeBot.html'));
 }
 
+const leaderboard = (req, res, next) => {
+  
+}
+
 module.exports = {
   addBot,
   removeBot,
+  leaderboard,
 }

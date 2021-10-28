@@ -9,7 +9,7 @@ class Connections {
       this.config = await mongoose.model('StreamerInfo', schema.streamer, 'StreamerInfo');
       const streamerList = await this.config.find({}).lean();
       await Promise.all(streamerList.map(async (streamer) => {
-        this.streamers[streamer.username] = await mongoose.model(streamer.username, schema.user, streamer.username);
+        this.streamers[streamer.broadcaster_id] = await mongoose.model(`bc${streamer.broadcaster_id}`, schema.user, `bc${streamer.broadcaster_id}`);
       }));
     } catch (err) {
       console.error(`DB ERROR: ${err}`);

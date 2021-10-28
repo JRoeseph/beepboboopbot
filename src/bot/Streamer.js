@@ -3,25 +3,35 @@ const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
 const CryptoJS = require('crypto-js');
+const { client } = require('tmi.js');
 
 class Streamer {
   // Initialization for streamer on bot startup
-  async init(username) {
-    this.username = username;
+  async init(broadcaster_id) {
+    this.broadcaster_id = broadcaster_id;
     try {
       const streamerDocs = db.getConfig();
-      this.userInfo = db.getStreamer(username);
-      const streamerConfig = await streamerDocs.findOne({username: this.username}).lean();
+      this.userInfo = db.getStreamer(broadcaster_id);
+      const streamerConfig = await streamerDocs.findOne({broadcaster_id});
       const decryptedBytes = await CryptoJS.AES.decrypt(streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
+      this.username = streamerConfig.username;
       this.syncCommands(streamerConfig);
-      const idResponse = await axios.get(`https://api.twitch.tv/helix/users?login=${username}`, {
+
+      // In order to support username changes through Twitch, we check the username here to see if it still matches our
+      // DB, and updates it if it doesn't
+      const usernameCheck = await axios.get(`https://api.twitch.tv/helix/users?id=${broadcaster_id}`, {
         headers: {
           'Client-Id': process.env.CLIENT_ID,
           'Authorization': `Bearer ${process.env.API_TOKEN}`,
         }
       });
-      this.broadcasterId = idResponse.data.data[0].id;
+      const username = usernameCheck.data.data[0].login;
+      if (username !== this.username) {
+        streamerConfig.username = username;
+        await streamerConfig.save(); 
+        this.username = username;
+      };
     } catch (err) {
       console.error(`STREAMER INIT ERROR: ${err}`);
     }
@@ -61,13 +71,20 @@ class Streamer {
     this.client = client;
   }
 
+  async getUserLevel(user_id) {
+    const userDoc = await this.userInfo.findOne({user_id}).lean();
+    const rank = await this.userInfo.countDocuments({xp: {$gt: userDoc.xp}});
+    const requiredXP = 16*(userDoc.level+1)*(userDoc.level+1)+100*(userDoc.level+1)-16;
+    this.client.say(`#${this.username}`, `${userDoc.username}: #${rank} - Lv ${userDoc.level} (${userDoc.xp} / ${requiredXP} XP)`)
+  }
+
   async addXp(user, xp) {
     const split = user.indexOf('#');
     const userid = user.substring(0, split);
     const username = user.substring(split+1);
     let userDoc = await this.userInfo.findOne({'user_id': userid})
     if (!userDoc) {
-      await this.createUser(userid);
+      await this.createUser(userid, username);
       userDoc = await this.userInfo.findOne({'user_id': userid})
     }
     userDoc.xp += xp;
@@ -79,9 +96,10 @@ class Streamer {
     userDoc.save();
   }
 
-  async createUser(userId) {
+  async createUser(userId, username) {
     await this.userInfo.create({
       user_id: userId,
+      username,
       xp: 0,
       level: 0,
       rewardTokens: 0,

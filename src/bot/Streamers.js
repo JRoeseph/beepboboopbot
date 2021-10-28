@@ -20,7 +20,7 @@ class Streamers {
 
     await Promise.all(streamerDocs.map(async (doc) => {
       const streamerObj = new Streamer();
-      await streamerObj.init(doc.username);
+      await streamerObj.init(doc.broadcaster_id);
       this.streamers.push(streamerObj);
     }));
   }
@@ -29,8 +29,13 @@ class Streamers {
     return this.streamers 
   };
 
-  getStreamer(username) { 
-    return this.streamers.find((streamer) => streamer.username === username);
+  // We do this so we can retrieve either by broadcaster_id or by username
+  getStreamer(id) {
+    if (isNaN(id)) {
+      return this.streamers.find((streamer) => streamer.username === id);
+    } else {
+      return this.streamers.find((streamer) => streamer.broadcaster_id === id);
+    }
   }
 
   async removeStreamer(code) {
@@ -61,9 +66,11 @@ class Streamers {
         });
       const streamerInfo = db.getConfig();
       const username = usernameResponse.data.data[0].login
+      const broadcaster_id = usernameResponse.data.data[0].id;
       const encryptedRefreshToken = await CryptoJS.AES.encrypt(tokenResponse.data.refresh_token, process.env.REFRESH_TOKEN_ENCRYPTION_KEY).toString()
       await streamerInfo.create({
         username,
+        broadcaster_id,
         encryptedRefreshToken,
         commands: constants.defaultCommands,
       });

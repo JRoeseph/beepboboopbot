@@ -46,7 +46,7 @@ const defaultCommands = [
     response: '#getLevel',
     description: 'This command responds to the user with their xp and level',
     modOnly: false,
-    cooldown: 10,
+    cooldown: 0,
     defaultCommand: true,
   },
   {

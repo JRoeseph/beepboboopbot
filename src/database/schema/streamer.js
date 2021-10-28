@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const StreamerInfo = new Schema({
+  broadcaster_id: String,
   username: String,
   encryptedRefreshToken: String,
   commands: [{
