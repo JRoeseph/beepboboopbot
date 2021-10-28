@@ -75,6 +75,7 @@ const setCategory = async (client, msgInfo, streamer) => {
 
 const getLevel = async (client, msgInfo, streamer) => {
   const userInfo = await streamer.getUserLevel(msgInfo.context['user-id']);
+  client.say(msgInfo.target, `${userInfo.username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
 }
 
 const resetDefaultCommands = async (client, msgInfo, streamer) => {
@@ -151,6 +152,10 @@ const setActive = (user_id, username, channel) => {
   activeChatters[`${user_id}#${username}`] = newObj;
 }
 
+const getLeaderboardURL = (client, msgInfo, streamer) => {
+  client.say(msgInfo.target, `@${msgInfo.context['display-name']} -> https://beepboboopbot.herokuapp.com/${streamer.username}/leaderboard`);
+}
+
 module.exports = {
   dadJoke,
   ping,
@@ -161,4 +166,5 @@ module.exports = {
   setActive,
   setStreamers,
   getLevel,
+  getLeaderboardURL,
 }
