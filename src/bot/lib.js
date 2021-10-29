@@ -45,9 +45,7 @@ const setTitle = async (client, msgInfo, streamer) => {
 }
 
 const setCategory = async (client, msgInfo, streamer) => {
-  //TODO: Fix special characters for URL friendly escape characters (N++)
-  //TODO: Catch error for category not found
-  const category = removeCommand(msgInfo.msg);
+  const category = removeCommand(msgInfo.msg).replace(/\+/g, '%2B');
   try {
     const categoryResponse = await axios.get(`https://api.twitch.tv/helix/games?name=${category}`, {
       headers: {
@@ -55,6 +53,10 @@ const setCategory = async (client, msgInfo, streamer) => {
         'Client-Id': process.env.CLIENT_ID,
       }
     });
+    if (categoryResponse.data.data.length === 0) {
+      client.say(msgInfo.target, 'That is an invalid category');
+      return;
+    }
     const game_id = categoryResponse.data.data[0].id;
     const accessTokenResponse = await axios.post(`https://id.twitch.tv/oauth2/token?grant_type=refresh_token&refresh_token=${streamer.refreshToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`);
     const accessToken = accessTokenResponse.data.access_token;

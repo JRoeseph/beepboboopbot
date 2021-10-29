@@ -18,10 +18,22 @@ class Streamers {
     const streamerDocs = await streamerInfo.find(query).lean();
     this.streamers = [];
 
-    //TODO: Move axios call to get usernames here so there is only one call, then also pass in username to init
+    const apiQuery = streamerDocs.reduce((concat, streamer) => {
+      return concat + `id=${streamer.broadcaster_id}&`
+    }, '?');
+    const usernameCheck = await axios.get(`https://api.twitch.tv/helix/users${apiQuery.substring(0, apiQuery.length-1)}`, {
+        headers: {
+          'Client-Id': process.env.CLIENT_ID,
+          'Authorization': `Bearer ${process.env.API_TOKEN}`,
+        }
+    });
+    const idToUsername = {};
+    usernameCheck.data.data.forEach((user) => {
+      idToUsername[user.id] = user.login;
+    })
     await Promise.all(streamerDocs.map(async (doc) => {
       const streamerObj = new Streamer();
-      await streamerObj.init(doc.broadcaster_id);
+      await streamerObj.init(doc.broadcaster_id, idToUsername[doc.broadcaster_id]);
       this.streamers.push(streamerObj);
     }));
   }
@@ -41,7 +53,6 @@ class Streamers {
 
   async removeStreamer(code) {
     const tokenResponse = await axios.post(`https://id.twitch.tv/oauth2/token?code=${code}&client_secret=${process.env.CLIENT_SECRET}&client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}addBot&grant_type=authorization_code`)
-    //TODO: Check if this second call is needed
     const usernameResponse = await axios.get(`https://api.twitch.tv/helix/users`, 
       {
         headers: {

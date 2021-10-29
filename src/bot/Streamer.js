@@ -7,8 +7,9 @@ const { client } = require('tmi.js');
 
 class Streamer {
   // Initialization for streamer on bot startup
-  async init(broadcaster_id) {
+  async init(broadcaster_id, username) {
     this.broadcaster_id = broadcaster_id;
+    this.username = username;
     this.isLive = true;
     try {
       const streamerDocs = db.getConfig();
@@ -18,20 +19,9 @@ class Streamer {
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
       this.username = streamerConfig.username;
       this.syncCommands(streamerConfig);
-
-      // In order to support username changes through Twitch, we check the username here to see if it still matches our
-      // DB, and updates it if it doesn't
-      const usernameCheck = await axios.get(`https://api.twitch.tv/helix/users?id=${broadcaster_id}`, {
-        headers: {
-          'Client-Id': process.env.CLIENT_ID,
-          'Authorization': `Bearer ${process.env.API_TOKEN}`,
-        }
-      });
-      const username = usernameCheck.data.data[0].login;
-      if (username !== this.username) {
+      if (username !== streamerConfig.username) {
         streamerConfig.username = username;
-        await streamerConfig.save(); 
-        this.username = username;
+        await streamerConfig.save();
       };
     } catch (err) {
       console.error(`STREAMER INIT ERROR: ${err}`);
