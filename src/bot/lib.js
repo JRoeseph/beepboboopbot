@@ -169,7 +169,7 @@ const everySecond = async (streamers) => {
       console.log('Refreshed heroku');
     }
   }
-  if (secondsSinceStart % 5 === 0) {
+  if (secondsSinceStart % 60 === 0) {
     checkIfLive(streamers);
     grantXp();
   }
