@@ -9,19 +9,19 @@ class Streamer {
   // Initialization for streamer on bot startup
   async init(broadcaster_id, username) {
     this.broadcaster_id = broadcaster_id;
-    this.username = username;
     this.isLive = true;
     try {
       const streamerDocs = db.getConfig();
       this.userInfo = db.getStreamer(broadcaster_id);
-      const streamerConfig = await streamerDocs.findOne({broadcaster_id});
-      const decryptedBytes = await CryptoJS.AES.decrypt(streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
+      this.streamerConfig = await streamerDocs.findOne({broadcaster_id});
+      const decryptedBytes = await CryptoJS.AES.decrypt(this.streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
-      this.username = streamerConfig.username;
-      this.syncCommands(streamerConfig);
-      if (username !== streamerConfig.username) {
-        streamerConfig.username = username;
-        await streamerConfig.save();
+      this.username = this.streamerConfig.username;
+      this.notifyLevelUp = this.streamerConfig.notifyLevelUp;
+      this.syncCommands(this.streamerConfig);
+      if (username !== this.streamerConfig.username) {
+        this.streamerConfig.username = username;
+        this.streamerConfig.save();
       };
     } catch (err) {
       console.error(`STREAMER INIT ERROR: ${err}`);
@@ -82,7 +82,9 @@ class Streamer {
     const xpRequired = (userDoc.level+1)*(userDoc.level+1)*16+100*(userDoc.level+1)-16;
     if (userDoc.xp >= xpRequired) {
       userDoc.level++;
-      this.client.say(`#${this.username}`, `/me > ${username} just leveled up in ${this.username} to level ${userDoc.level}!`)
+      if (this.notifyLevelUp) {
+        this.client.say(`#${this.username}`, `/me > ${username} just leveled up in ${this.username} to level ${userDoc.level}!`)
+      }
     }
     userDoc.save();
   }
@@ -96,6 +98,12 @@ class Streamer {
       rewardTokens: 0,
       customStreamerStuff: {},
     });
+  }
+
+  toggleLevelUpNotifications() {
+    this.notifyLevelUp = !this.notifyLevelUp;
+    this.streamerConfig.notifyLevelUp = this.notifyLevelUp;
+    this.streamerConfig.save();
   }
 }
 

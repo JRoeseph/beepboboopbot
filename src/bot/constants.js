@@ -2,6 +2,7 @@ const defaultCommands = [
   {
     command: 'dadjoke',
     response: '#dadJoke',
+    showInCommands: false,
     modOnly: false,
     cooldown: 300,
     defaultCommand: true,
@@ -9,6 +10,8 @@ const defaultCommands = [
   {
     command: '!ping',
     response: '#ping',
+    description: 'A fun command that just returns "Pong!" meant to test if the bot is active',
+    showInCommands: true,
     modOnly: false,
     cooldown: 60,
     defaultCommand: true,

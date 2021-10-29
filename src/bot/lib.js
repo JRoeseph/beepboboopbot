@@ -7,6 +7,7 @@ let streamers;
 const setStreamers = (streamersParam) => {
   streamers = streamersParam;
 }
+
 const removeCommand = (message) => {
   return message.split(' ').splice(1).join(' ');
 }
@@ -92,6 +93,11 @@ const resetDefaultCommands = async (client, msgInfo, streamer) => {
   console.log('* Executed "!resetDefaultCommands" command');
 }
 
+const toggleLevelUpNotifications = async (client, msgInfo, streamer) => {
+  streamer.toggleLevelUpNotifications();
+  client.say(msgInfo.target, `Level Up Notifications toggled ${streamer.notifyLevelUp ? 'on' : 'off'}`)
+}
+
 const activeChatters = {};
 const grantXp = () => {
   const users = Object.keys(activeChatters);
@@ -163,7 +169,7 @@ const everySecond = async (streamers) => {
       console.log('Refreshed heroku');
     }
   }
-  if (secondsSinceStart % 60 === 0) {
+  if (secondsSinceStart % 5 === 0) {
     checkIfLive(streamers);
     grantXp();
   }
@@ -192,4 +198,5 @@ module.exports = {
   setStreamers,
   getLevel,
   getLeaderboardURL,
+  toggleLevelUpNotifications,
 }
