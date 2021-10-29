@@ -56,7 +56,6 @@ class Streamers {
     await this.streamers[streamerIndex].getUsers().drop();
     delete this.streamers[streamerIndex];
     this.streamers.splice(streamerIndex, 1);
-    //TODO: Drop corresponding collection
   }
 
   async addStreamer(code) {

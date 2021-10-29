@@ -21,7 +21,7 @@ const leaderboard = async (req, res, next) => {
   let currRank = 0;
   const userHTML = users.reduce((string, user) => {
     const xpRequired = 16*(user.level+1)*(user.level+1)+100*(user.level+1)-16;
-    const prevXpRequired = 16*(user.level)*(user.level)+100*(user.level)-16;
+    const prevXpRequired = user.level === 0 ? 0 :16*(user.level)*(user.level)+100*(user.level)-16;
     const percentage = (user.xp-prevXpRequired)*100/(xpRequired-prevXpRequired);
     currRank++;
     return string + `<li>${user.username}: #${currRank} - LV ${user.level} (${user.xp}/${xpRequired} XP)  (${percentage}%)</li>`
