@@ -85,6 +85,10 @@ const getLevel = async (client, msgInfo, streamer) => {
   } else {
     username = msgInfo.context['username']
   }
+  if (`#${username.toLowerCase()}` === msgInfo.target) {
+    client.say(msgInfo.target, `You are the streamer, this might return total xp earned on your channel eventually in the future`);
+    return;
+  }
   const userInfo = await streamer.getUserLevel(username);
   client.say(msgInfo.target, `${username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
 }
