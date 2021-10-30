@@ -1,5 +1,6 @@
 const axios = require('axios');
 const db = require('../database');
+const { streamer } = require('../database/schema');
 const constants = require('./constants')
 
 // This is janky, but it avoids a circular dependency
@@ -88,16 +89,18 @@ const getLevel = async (client, msgInfo, streamer) => {
   client.say(msgInfo.target, `${username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
 }
 
-const resetDefaultCommands = async (client, msgInfo, streamer) => {
+const updateDefaultCommands = async (client, msgInfo, streamer) => {
   const streamerInfo = db.getConfig();
   const streamerConfig = await streamerInfo.findOne({username: streamer.username});
-  const nonDefaults = streamerConfig.commands.filter((command) => !command.defaultCommand)
-  const newCommandList = nonDefaults.concat(constants.defaultCommands);
-  streamerConfig.commands = newCommandList;
+  constants.defaultCommands.forEach((command) => {
+    if (!streamerConfig.commands.find((streamerCommand) => streamerCommand.command === command.command)) {
+      streamerConfig.commands.push(command);
+    }
+  })
   await streamerConfig.save();
   streamer.syncCommands(streamerConfig);
-  client.say(msgInfo.target, `All default commands have been removed and re-added`);
-  console.log('* Executed "!resetDefaultCommands" command');
+  client.say(msgInfo.target, `All new default commands have been added`);
+  console.log('* Executed "!updateDefaultCommands" command');
 }
 
 const toggleLevelUpNotifications = async (client, msgInfo, streamer) => {
@@ -105,6 +108,15 @@ const toggleLevelUpNotifications = async (client, msgInfo, streamer) => {
   client.say(msgInfo.target, `Level Up Notifications toggled ${streamer.notifyLevelUp ? 'on' : 'off'}`)
 }
 
+const toggleCommand = async (client, msgInfo, streamer) => {
+  const command = removeCommand(msgInfo.msg);
+  const isEnabled = await streamer.toggleCommand(command);
+  if (typeof(isEnabled) === 'string') {
+    client.say(msgInfo.target, `${command} is not a command for this channel`);
+  } else {
+    client.say(msgInfo.target, `${command} has been ${isEnabled ? 'enabled' : 'disabled'}`);
+  }
+}
 const activeChatters = {};
 const grantXp = () => {
   const users = Object.keys(activeChatters);
@@ -200,10 +212,11 @@ module.exports = {
   setTitle,
   setCategory,
   everySecond,
-  resetDefaultCommands,
+  updateDefaultCommands,
   setActive,
   setStreamers,
   getLevel,
   getLeaderboardURL,
   toggleLevelUpNotifications,
+  toggleCommand,
 }

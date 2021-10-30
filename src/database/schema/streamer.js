@@ -11,6 +11,7 @@ const StreamerInfo = new Schema({
     command: String,
     description: String,
     showInCommands: Boolean,
+    isEnabled: Boolean,
     response: String,
     modOnly: Boolean,
     cooldown: Number,

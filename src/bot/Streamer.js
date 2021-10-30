@@ -3,7 +3,7 @@ const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
 const CryptoJS = require('crypto-js');
-const { client } = require('tmi.js');
+const constants = require('./constants');
 
 class Streamer {
   // Initialization for streamer on bot startup
@@ -18,6 +18,12 @@ class Streamer {
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
       this.username = this.streamerConfig.username;
       this.notifyLevelUp = this.streamerConfig.notifyLevelUp;
+      constants.defaultCommands.forEach((command) => {
+        if (!this.streamerConfig.commands.find((streamerCommand) => streamerCommand.command === command.command)) {
+          this.streamerConfig.commands.push(command);
+        }
+      })
+      await this.streamerConfig.save();
       this.syncCommands(this.streamerConfig);
       if (username !== this.streamerConfig.username) {
         this.streamerConfig.username = username;
@@ -39,14 +45,17 @@ class Streamer {
     this.commands.passTime();
   }
 
-  syncCommands(streamerConfig) {
+  syncCommands() {
     const startingCommands = {}
-    streamerConfig.commands.forEach((command) => {
+    this.streamerConfig.commands.forEach((command) => {
       startingCommands[command.command] = {
         // Here is where we check if the command has a function in lib
         response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
         modOnly: command.modOnly,
         cooldown: command.cooldown,
+        isEnabled: command.isEnabled,
+        showInCommands: command.showInCommands,
+        defaultCommand: command.defaultCommand,
         currentCooldown: 0,
       }
     });
@@ -98,6 +107,17 @@ class Streamer {
       rewardTokens: 0,
       customStreamerStuff: {},
     });
+  }
+
+  async toggleCommand(command) {
+    const commandObj = this.streamerConfig.commands.find((streamerCommand)=> command.toLowerCase() === streamerCommand.command);
+    if (!commandObj) {
+      return "Nope";
+    }
+    commandObj.isEnabled = !commandObj.isEnabled;
+    await this.streamerConfig.save();
+    this.syncCommands();
+    return commandObj.isEnabled;
   }
 
   toggleLevelUpNotifications() {

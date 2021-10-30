@@ -13,7 +13,7 @@ class Commands {
   }
 
   doesCommandExist(command) {
-    return !!this.commands[command];
+    return !!this.commands[command]?.isEnabled;
   }
 
   isOnCooldown(command) {
