@@ -33,8 +33,14 @@ const leaderboard = async (req, res, next) => {
   res.status(200).send(withUsers);
 }
 
+const commands = async (req, res, next) => {
+  const streamer = streamers.getStreamer(req.params.streamer);
+  const streamerCommands = streamer.streamerConfig.commands;
+}
+
 module.exports = {
   addBot,
   removeBot,
   leaderboard,
+  commands,
 }

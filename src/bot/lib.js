@@ -140,8 +140,8 @@ const checkIfLive = async (streamers) => {
   try {
     const streamersArray = streamers.getStreamers();
     const streamerQueryParam = streamersArray.reduce((string, streamer) => {
-      return string + `${streamer.broadcaster_id},` 
-    }, '?user_id=')
+      return string + `user_id=${streamer.broadcaster_id}&` 
+    }, '?')
     const streamsInfo = await axios.get(`https://api.twitch.tv/helix/streams${streamerQueryParam.substring(0, streamerQueryParam.length-1)}`, {
       headers: {
         'Authorization': `Bearer ${process.env.API_TOKEN}`,
