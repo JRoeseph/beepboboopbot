@@ -122,22 +122,7 @@ const grantXp = () => {
   const users = Object.keys(activeChatters);
   users.forEach((user) => {
     const streams = Object.keys(activeChatters[user]);
-    // Here we want to change the amount of xp they get depending on the number of streams they're in
-    let xp;
-    switch(streams.length) {
-      case 1:
-        xp = Math.floor(Math.random()*2)+4;
-        break;
-      case 2:
-        xp = 2;
-        break;
-      case 3:
-        xp = 1;
-        break;
-      default:
-        xp = 0;
-        break;
-    }
+    const xp = Math.floor(Math.random()*2)+4;
     streams.forEach((stream) => {
       // Here we decrement and remove the user from the activeChatters list if they are zeroed out
       const streamer = streamers.getStreamer(stream);
