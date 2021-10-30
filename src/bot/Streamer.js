@@ -62,9 +62,9 @@ class Streamer {
     this.client = client;
   }
 
-  async getUserLevel(user_id) {
-    const userDoc = await this.userInfo.findOne({user_id}).lean();
-    const rank = await this.userInfo.countDocuments({xp: {$gt: userDoc.xp}});
+  async getUserLevel(username) {
+    const userDoc = await this.userInfo.findOne({username}).lean();
+    const rank = (await this.userInfo.countDocuments({xp: {$gt: userDoc.xp}}))+1;
     const requiredXP = 16*(userDoc.level+1)*(userDoc.level+1)+100*(userDoc.level+1)-16;
     return {xp: userDoc.xp, requiredXP, level: userDoc.level, rank};
   }

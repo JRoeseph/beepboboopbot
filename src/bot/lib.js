@@ -77,8 +77,15 @@ const setCategory = async (client, msgInfo, streamer) => {
 }
 
 const getLevel = async (client, msgInfo, streamer) => {
-  const userInfo = await streamer.getUserLevel(msgInfo.context['user-id']);
-  client.say(msgInfo.target, `${userInfo.username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
+  const name = removeCommand(msgInfo.msg);
+  let username;
+  if (name !== '') {
+    username = name;
+  } else {
+    username = msgInfo.context['username']
+  }
+  const userInfo = await streamer.getUserLevel(username);
+  client.say(msgInfo.target, `${username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
 }
 
 const resetDefaultCommands = async (client, msgInfo, streamer) => {
