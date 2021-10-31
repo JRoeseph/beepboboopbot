@@ -24,7 +24,7 @@ const leaderboard = async (req, res, next) => {
     const prevXpRequired = user.level === 0 ? 0 :16*(user.level)*(user.level)+100*(user.level)-16;
     const percentage = (user.xp-prevXpRequired)*100/(xpRequired-prevXpRequired);
     currRank++;
-    return string + `<li>${user.username}: #${currRank} - LV ${user.level} (${user.xp}/${xpRequired} XP)  (${percentage}%)</li>`
+    return string + `<li>${user.username}: #${currRank} - LV ${user.level} (${user.xp}/${xpRequired} XP)  (${Math.round(percentage*100)/100}%)</li>`
   }, '')
   // We call replace twice here since it shows up twice and replaceAll doesn't work in this version of Node
   const streamerBoard = leaderboardHTML.replace('${streamer}', streamer.username).replace('${streamer}', streamer.username);

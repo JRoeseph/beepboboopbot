@@ -1,6 +1,5 @@
 const axios = require('axios');
 const db = require('../database');
-const { streamer } = require('../database/schema');
 const constants = require('./constants')
 
 // This is janky, but it avoids a circular dependency
@@ -121,6 +120,13 @@ const toggleCommand = async (client, msgInfo, streamer) => {
     client.say(msgInfo.target, `${command} has been ${isEnabled ? 'enabled' : 'disabled'}`);
   }
 }
+
+const addCommand = async (client, msgInfo, streamer) => {
+  const noCommand = removeCommand(msgInfo.msg);
+  const divide = noCommand.split(' ');
+  const newCommand = divide[0]
+}
+
 const activeChatters = {};
 const grantXp = () => {
   const users = Object.keys(activeChatters);
