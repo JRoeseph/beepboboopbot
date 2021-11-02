@@ -1,0 +1,17 @@
+body {
+  background: rgb(255,0,0);
+  background: linear-gradient(135deg, rgba(255,0,0,1) 0%, rgba(255,141,0,1) 21%, rgba(255,252,0,1) 35%, rgba(0,255,0,1) 49%, rgba(0,228,255,1) 63%, rgba(22,0,255,1) 79%, rgba(158,0,255,1) 100%);
+}
+
+  .response_box {
+  margin-left: 33vw;
+  margin-top: 30vh;
+  width: 33vw;
+  font-size: 2vw;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  background-color: #d3d3d3;
+  padding: 0.2vw;
+  border-radius: 0.5vw;
+  outline: 0.2vw solid;
+  box-shadow: 3vw 3vw 2vw black;
+}

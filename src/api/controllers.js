@@ -5,13 +5,21 @@ const leaderboardHTML = require('./leaderboard');
 //We are using .htmls btw so we can eventually make it look prettier
 
 const addBot = (req, res, next) => {
-  streamers.addStreamer(req.query.code);
-  res.status(200).sendFile(path.join(__dirname, '/addBot.html'));
+  if (!req.query.code) {
+    res.status(200).sendFile(path.join(__dirname, '/html/invalidPage.html'));
+  } else {
+    streamers.addStreamer(req.query.code);
+    res.status(200).sendFile(path.join(__dirname, '/html/addBot.html'));
+  }
 } 
 
 const removeBot = (req, res, next) => {
-  streamers.removeStreamer(req.query.code);
-  res.status(200).sendFile(path.join(__dirname, '/removeBot.html'));
+  if (!req.query.code) {
+    res.status(200).sendFile(path.join(__dirname, '/html/invalidPage.html'));
+  } else {
+    streamers.removeStreamer(req.query.code);
+    res.status(200).sendFile(path.join(__dirname, '/html/removeBot.html'));
+  }
 }
 
 const leaderboard = async (req, res, next) => {
