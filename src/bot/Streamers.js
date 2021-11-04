@@ -9,7 +9,7 @@ class Streamers {
     const streamerInfo = db.getConfig();
     let query = {}
     if (process.env.DEV_MODE === 'true') {
-      query.username = 'xandotoaster';
+      query.username = 'beepboboopbot';
     } else {
       query.username = {
         $ne: 'beepboboopbot',
