@@ -1,9 +1,9 @@
 body {
   background: rgb(255,0,0);
-  background: linear-gradient(135deg, rgba(255,0,0,1) 0%, rgba(255,141,0,1) 21%, rgba(255,252,0,1) 35%, rgba(0,255,0,1) 49%, rgba(0,228,255,1) 63%, rgba(22,0,255,1) 79%, rgba(158,0,255,1) 100%);
+  background: linear-gradient(90deg, red 0%, orange 21%, yellow 35%, lime 49%, cyan 63%, blue 79%, purple 100%);
 }
 
-  .response_box {
+.response_box {
   margin-left: 33vw;
   margin-top: 30vh;
   width: 33vw;
@@ -14,4 +14,146 @@ body {
   border-radius: 0.5vw;
   outline: 0.2vw solid;
   box-shadow: 3vw 3vw 2vw black;
+}
+
+header {
+  color: white;
+  font-size: 6.5vh;
+  margin-left: 1vw;
+  height: 9vh;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  text-shadow: -0.2vw 0 black, 0 0.2vw black, 0.2vw 0 black, 0 -0.2vw black;
+}
+
+h2 {
+  color: white;
+  font-size: 1w;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  margin: 0;
+  text-shadow: -0.15vw 0 black, 0 0.15vw black, 0.15vw 0 black, 0 -0.15vw black;
+}
+
+.rankbox {
+  background-color: lightgray;
+  border-radius: 0.3vw;
+  padding: 0.2vw;
+  outline: 0.2vw solid;
+  box-shadow: 0.333vw 0.333vw 0.25vw black;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch; 
+}
+
+.rank {
+  font-size: 1vw;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  text-shadow: -0.1vw 0 black, 0 0.1vw black, 0.1vw 0 black, 0 -0.1vw black;;
+}
+
+.goldRank { 
+  color: gold;
+}
+
+.silverRank {
+  color: silver;
+}
+
+.bronzeRank {
+  color: #cd7f32;
+}
+
+.whiteRank {
+  color: white;
+}
+
+.columns {
+  display: flex
+}
+
+.column {
+  flex: 1;
+  margin-right: 0.1vw;
+}
+
+.columnone {
+  flex: 1;
+  margin-right: 1vw;
+}
+
+.normal {
+  font-size: 1vw;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+.center {
+  margin-left: 5vw;
+}
+
+.right {
+  float: right;
+}
+
+.leftside {
+  width: 21.3vw;
+}
+
+.commands {
+  background-color: lightgray;
+  border-radius: 0.3vw;
+  padding: 0.5vw;
+  outline: 0.2vw solid;
+  box-shadow: 0.333vw 0.333vw 0.25vw black;
+}
+
+.command {
+  background-color: darkgray;
+  color: black;
+  font-size: 1vw;
+  font-weight: bold;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  border-radius: 0.3vw;
+  padding: 0.2vw;
+  outline: 0.2vw solid white;
+  display: inline-block;
+}
+
+.commandattribute {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 0.9vw;
+  padding-left: 0.25vw;
+  padding-right: 0.25vw;
+  border-radius: 0.5vw;
+  margin-right: 0.2vw;
+}
+
+.description {
+  font-size: 1vw;
+  margin-top: 0.2vw;
+  margin-bottom: 0.2vw;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+.cooldown {
+  background-color: purple;
+  color: white;
+}
+
+.enabled {
+  background-color: limegreen;
+  color: black;
+}
+
+.disabled {
+  background-color: red;
+  color: black;
+}
+
+.modonly {
+  background-color: lime;
+  color: black;
+}
+
+.defaultcommand {
+  background-color: cyan;
+  color: black;
 }

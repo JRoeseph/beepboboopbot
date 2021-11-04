@@ -9,7 +9,7 @@ class Streamers {
     const streamerInfo = db.getConfig();
     let query = {}
     if (process.env.DEV_MODE === 'true') {
-      query.username = 'beepboboopbot';
+      query.username = 'xandotoaster';
     } else {
       query.username = {
         $ne: 'beepboboopbot',
@@ -44,10 +44,14 @@ class Streamers {
 
   // We do this so we can retrieve either by broadcaster_id or by username
   getStreamer(id) {
-    if (isNaN(id)) {
-      return this.streamers.find((streamer) => streamer.username === id);
-    } else {
-      return this.streamers.find((streamer) => streamer.broadcaster_id === id);
+    try {
+      if (isNaN(id)) {
+        return this.streamers.find((streamer) => streamer.username === id);
+      } else {
+        return this.streamers.find((streamer) => streamer.broadcaster_id === id);
+      }
+    } catch (err) {
+      console.error(`GET STREAMER ERROR: ${err}`)
     }
   }
 

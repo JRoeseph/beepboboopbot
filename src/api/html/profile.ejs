@@ -1,0 +1,44 @@
+<head>
+  <link rel="stylesheet" href="/styles.css">
+  <title><%=streamer%></title>
+</head>
+<body>
+  <header><%=streamer%></header>
+  <hr>
+  <div class="columns">
+    <div class="columnone">
+      <h2>Commands</h2>
+      <il>
+        <% commands.forEach((command) => {%>
+          <ul class="commands">
+            <div class="command"><%=command.command%></div>
+            <div class="description"><%=command.description%> </div>
+            <div>
+              <span class="cooldown commandattribute">Cooldown: <%=command.cooldown%> </span>
+              <% if (command.modOnly) {%> <span class="modonly commandattribute">Mod Only</span> <%}%>
+              <% if (command.isEnabled) {%>  
+                <span class="enabled commandattribute">Enabled</span>
+              <%} else {%>
+                <span class="disabled commandattribute">Disabled</span>
+              <%}%>
+              <% if (command.defaultCommand) {%> <span class="defaultcommand commandattribute">Default Command</span> <%}%>
+            </div>
+          </ul>
+          <%});%>
+      </il>
+    </div>
+    <div class="column">
+      <h2>Leaderboard</h2>
+      <il>
+        <% users.forEach((user) => {%>
+        <ul class="column rankbox">
+          <span class="leftside"><span class="rank <%=user.color%>">#<%=user.rank%>: </span><span class="normal username"><%=user.username%> </span></span>
+          <span class="normal"><%=user.xp%> xp </span>
+          <span class="normal">level <%=user.level%> </span>
+          <span class="normal"><%=user.percentage%>% to next level</span>
+        </ul>
+        <%});%>
+      </il>
+    </div>
+  </div>
+</body>

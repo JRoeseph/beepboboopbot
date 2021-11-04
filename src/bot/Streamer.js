@@ -51,6 +51,7 @@ class Streamer {
       startingCommands[command.command] = {
         // Here is where we check if the command has a function in lib
         response: command.response.startsWith("#") ? lib[command.response.substring(1)] : command.response,
+        description: command.description,
         modOnly: command.modOnly,
         cooldown: command.cooldown,
         isEnabled: command.isEnabled,
@@ -124,6 +125,10 @@ class Streamer {
     this.notifyLevelUp = !this.notifyLevelUp;
     this.streamerConfig.notifyLevelUp = this.notifyLevelUp;
     this.streamerConfig.save();
+  }
+
+  getCommands() {
+    return this.commands.getCommands();
   }
 }
 

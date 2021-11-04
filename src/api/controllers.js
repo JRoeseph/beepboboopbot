@@ -1,6 +1,5 @@
 const path = require('path');
 const streamers = require('../bot/Streamers');
-const leaderboardHTML = require('./leaderboard');
 
 //We are using .htmls btw so we can eventually make it look prettier
 
@@ -22,33 +21,54 @@ const removeBot = (req, res, next) => {
   }
 }
 
-const leaderboard = async (req, res, next) => {
+const profile = async (req, res, next) => {
   const streamer = streamers.getStreamer(req.params.streamer);
   const usersModel = streamer.getUsers();
   const users = await usersModel.find().sort({xp: -1}).lean();
   let currRank = 0;
-  const userHTML = users.reduce((string, user) => {
+  users.forEach((user) => {
     const xpRequired = 16*(user.level+1)*(user.level+1)+100*(user.level+1)-16;
     const prevXpRequired = user.level === 0 ? 0 :16*(user.level)*(user.level)+100*(user.level)-16;
-    const percentage = (user.xp-prevXpRequired)*100/(xpRequired-prevXpRequired);
     currRank++;
-    return string + `<li>${user.username}: #${currRank} - LV ${user.level} (${user.xp}/${xpRequired} XP)  (${Math.round(percentage*100)/100}%)</li>`
-  }, '')
-  // We call replace twice here since it shows up twice and replaceAll doesn't work in this version of Node
-  const streamerBoard = leaderboardHTML.replace('${streamer}', streamer.username).replace('${streamer}', streamer.username);
-  const withUsers = streamerBoard.replace('${users}', userHTML);
-  res.setHeader('Content-Type', 'text/html');
-  res.status(200).send(withUsers);
-}
-
-const commands = async (req, res, next) => {
-  const streamer = streamers.getStreamer(req.params.streamer);
-  const streamerCommands = streamer.streamerConfig.commands;
+    user.percentage = Math.floor((user.xp-prevXpRequired)*100/(xpRequired-prevXpRequired))+'';
+    if (user.percentage.length === 1) {
+      user.percentage = '0' + user.percentage;
+    }
+    user.rank = currRank; 
+    switch (currRank) {
+      case 1:
+        user.color = 'goldRank';
+        break;
+      case 2:
+        user.color = 'silverRank';
+        break;
+      case 3:
+        user.color = 'bronzeRank';
+        break;
+      default:
+        user.color = 'whiteRank';
+    }
+  })
+  const allCommands = streamer.getCommands();
+  const commands = [];
+  const commandNames = Object.keys(allCommands);
+  commandNames.forEach((commandName) => {
+    if (allCommands[commandName].showInCommands) {
+      commands.push({
+        command: commandName,
+        description: allCommands[commandName].description ? allCommands[commandName].description : 'No Description Found',
+        cooldown: allCommands[commandName].cooldown,
+        isEnabled: allCommands[commandName].isEnabled,
+        modOnly: allCommands[commandName].modOnly,
+        defaultCommand: allCommands[commandName].defaultCommand,
+      })
+    }
+  });
+  res.render('profile', {streamer: streamer.username, users, commands});
 }
 
 module.exports = {
   addBot,
   removeBot,
-  leaderboard,
-  commands,
+  profile,
 }

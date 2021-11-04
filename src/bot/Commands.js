@@ -5,6 +5,10 @@ class Commands {
     this.commands = commands;
   }
 
+  getCommands() {
+    return this.commands;
+  }
+
   passTime() {
     const keys = Object.keys(this.commands);
     keys.forEach((key) => {
@@ -28,7 +32,7 @@ class Commands {
     const command = this.commands[commandName];
     const response = command?.response;
     if (!response) {
-        console.log(`* Unknown command ${commandName}`);
+        console.log(`* Response error ${commandName}`);
         // Why is string lowercase what is wrong with you JavaScript?!?!?
       } else if (typeof(response) === 'string') {
         client.say(msgInfo.target, response);

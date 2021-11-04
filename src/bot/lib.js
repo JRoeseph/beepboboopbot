@@ -197,8 +197,8 @@ const setActive = (user_id, username, channel) => {
   activeChatters[`${user_id}#${username}`] = newObj;
 }
 
-const getLeaderboardURL = (client, msgInfo, streamer) => {
-  client.say(msgInfo.target, `@${msgInfo.context['display-name']} -> https://beepboboopbot.herokuapp.com/${streamer.username}/leaderboard`);
+const getProfileURL = (client, msgInfo, streamer) => {
+  client.say(msgInfo.target, `The XP leaderboard and commands can be found here: https://beepboboopbot.herokuapp.com/${streamer.username}`);
 }
 
 module.exports = {
@@ -211,7 +211,7 @@ module.exports = {
   setActive,
   setStreamers,
   getLevel,
-  getLeaderboardURL,
+  getProfileURL,
   toggleLevelUpNotifications,
   toggleCommand,
 }
