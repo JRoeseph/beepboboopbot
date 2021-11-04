@@ -114,7 +114,7 @@ const defaultCommands = [
     description: 'This command toggles a command to be enabled or disabled. This DOES apply to default commands',
     showInCommands: true,
     isEnabled: true,
-    modOnly: false,
+    modOnly: true,
     cooldown: 0,
     defaultCommand: true,
   }
