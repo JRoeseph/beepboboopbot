@@ -99,7 +99,7 @@ const defaultCommands = [
     defaultCommand: true,
   },
   {
-    command: '!updateDefaultCommands',
+    command: '!updatedefaultcommands',
     response: '#updateDefaultCommands',
     description: 'This command adds all default commands that currently don\'t exist for your stream',
     showInCommands: true,
