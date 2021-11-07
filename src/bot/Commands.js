@@ -42,6 +42,12 @@ class Commands {
         command.currentCooldown = command.cooldown;
     }
   }
+
+  randomChance(commandName) {
+    const command = this.commands[commandName];
+    if (command.chanceToRun === undefined) return true;
+    else return Math.random() + (0.01 * command.chanceToRun) > 1;
+  }
 }
 
 module.exports = Commands;

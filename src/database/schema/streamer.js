@@ -15,6 +15,8 @@ const StreamerInfo = new Schema({
     response: String,
     modOnly: Boolean,
     cooldown: Number,
+    // This is meant to be strictly for the dadJoke, but can be used for custom commands 
+    chanceToRun: Number,
     defaultCommand: Boolean,
   }],
 });

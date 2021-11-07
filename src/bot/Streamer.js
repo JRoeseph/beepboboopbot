@@ -36,7 +36,7 @@ class Streamer {
 
   runCommand(command, msgInfo) {
     if (!this.commands.doesCommandExist(command)) return;
-    if (this.commands.hasPermission(command, msgInfo.context) && !this.commands.isOnCooldown(command)) {
+    if (this.commands.hasPermission(command, msgInfo.context) && !this.commands.isOnCooldown(command) && this.commands.randomChance(command)) {
       this.commands.runCommand(command, this.client, msgInfo, this);
     }
   }
@@ -57,6 +57,7 @@ class Streamer {
         isEnabled: command.isEnabled,
         showInCommands: command.showInCommands,
         defaultCommand: command.defaultCommand,
+        chanceToRun: command.chanceToRun,
         currentCooldown: 0,
       }
     });
