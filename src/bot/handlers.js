@@ -14,7 +14,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
     lib.setActive(context['user-id'], context.username, target.substring(1))
 
     // We use two regexes here because if there is a period we only want to go to the end of the sentence
-    let imJoke = msg.match(/(^| )[iI]('?[mM]| [aA][mM]) [\w ]+[^\w ]/);
+    let imJoke = msg.match(/(^| )[iI]('?[mM]| [aA][mM]) [\w ]+[.,]/);
     if (imJoke) {
       // I'm replacing msg here with just the imJoke as a work around since most commands are workable with just the
       // message, but this one behaves differently
