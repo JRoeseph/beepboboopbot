@@ -137,6 +137,16 @@ const defaultCommands = [
     modOnly: true,
     cooldown: 0,
     defaultCommand: true,
+  },
+  {
+    command: "!bug",
+    response: "Found a bug with BeepBoBoopBot? Send me a DM on Discord at JRoeseph#2897",
+    description: "Sends info on how to report bugs",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: false,
+    cooldown: 30,
+    defaultCommand: true,
   }
 ]
 
