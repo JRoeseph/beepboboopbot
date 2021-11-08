@@ -124,7 +124,64 @@ const toggleCommand = async (client, msgInfo, streamer) => {
 const addCommand = async (client, msgInfo, streamer) => {
   const noCommand = removeCommand(msgInfo.msg);
   const divide = noCommand.split(' ');
-  const newCommand = divide[0]
+  const newCommand = divide[0];
+  if (streamer.hasCommand(newCommand)) {
+    client.say(msgInfo.target, 'This command already exists');
+    return;
+  }
+  const arguments = {
+    modOnly: false,
+    cooldown: 60,
+    showInCommands: true,
+    chanceToRun: 100,
+  };
+  let response;
+  if (divide[1].startsWith('-')) {
+    const argumentsString = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/)[0];
+    const argumentsSeparated = argumentsString.match(/i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+)/g);
+    argumentsSeparated.forEach((argument) => {
+      if (argument === 'i') {
+        arguments.showInCommands = false;
+      } else if (argument === 'v') {
+        arguments.showInCommands = true;
+      } else if (argument === 'm') {
+        arguments.modOnly = true;
+      } else if (argument === 'a') {
+        arguments.modOnly = false;
+      } else if (argument.startsWith('c')) {
+        arguments.cooldown = argument.substring(1) - 0;
+      } else if (argument.startsWith('%')) {
+        arguments.chanceToRun = argument.substring(1) - 0;
+      } else if (argument.startsWith('d')) {
+        arguments.description = argument.substring(2, argument.length-1);
+      }
+    })
+    response = noCommand.substring(newCommand.length + argumentsString.length + 2);
+  } else {
+    response = noCommand.substring(newCommand.length + 1);
+  }
+  streamer.addCommand({
+    command: newCommand,
+    ...arguments,
+    isEnabled: true,
+    response,
+    defaultCommand: false,
+  });
+  client.say(msgInfo.target, `Command ${newCommand} has been added!`);
+}
+
+const deleteCommand = async (client, msgInfo, streamer) => {
+  const command = msgInfo.msg.split(' ')[1];
+  if (!streamer.hasCommand(command)) {
+    client.say(msgInfo.target, 'This command doesn\'t exist');
+    return;
+  }
+  const successful = streamer.deleteCommand(command);
+  if (!successful) {
+    client.say(msgInfo.target, 'You cannot delete default commands');
+    return;
+  }  
+  client.say(msgInfo.target, 'Command successfully deleted');
 }
 
 const activeChatters = {};
@@ -214,4 +271,6 @@ module.exports = {
   getProfileURL,
   toggleLevelUpNotifications,
   toggleCommand,
+  addCommand,
+  deleteCommand,
 }

@@ -35,7 +35,7 @@ class Streamer {
   }
 
   runCommand(command, msgInfo) {
-    if (!this.commands.doesCommandExist(command)) return;
+    if (!this.commands.doesCommandExist(command) || !this.commands.isCommandEnabled(command)) return;
     if (this.commands.hasPermission(command, msgInfo.context) && !this.commands.isOnCooldown(command) && this.commands.randomChance(command)) {
       this.commands.runCommand(command, this.client, msgInfo, this);
     }
@@ -65,7 +65,7 @@ class Streamer {
     this.commands.init(startingCommands);
   }
 
-  getUsers() {
+  async getUsers() {
     return this.userInfo;
   }
   
@@ -130,6 +130,28 @@ class Streamer {
 
   getCommands() {
     return this.commands.getCommands();
+  }
+
+  async addCommand(commandInfo) {
+    this.streamerConfig.commands.push(commandInfo);
+    await this.streamerConfig.save();
+    this.syncCommands();
+  }
+
+  hasCommand(commandName) {
+    return this.commands.doesCommandExist(commandName);
+  }
+  
+  deleteCommand(commandName) {
+    const commandArray = this.streamerConfig.commands;
+    const commandIndex = commandArray.findIndex((command) => command.command === commandName);
+    if (commandArray[commandIndex].defaultCommand) {
+      return false;
+    }
+    commandArray.splice(commandIndex, 1);
+    this.streamerConfig.save();
+    this.commands.deleteCommand(commandName);
+    return true;
   }
 }
 

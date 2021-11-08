@@ -117,6 +117,26 @@ const defaultCommands = [
     modOnly: true,
     cooldown: 0,
     defaultCommand: true,
+  },
+  {
+    command: "!addcomm",
+    response: "#addCommand",
+    description: "Adds a command with certain arguments and response. Format: \"!addcomm !<new command name> -<arguments> <response>\". \nValid arguments are 'i/v' (invisible or visible in !commands, visible by default), 'm/a' (mod only or all user accessible, all be default), 'd\"<text>\"' (description, none by default), 'c<number>' (cooldown in seconds, 60 seconds by default), '%<number>' (chance to run on call, 100 by default). Example: \'!addcomm !beep -vd\"Returns boop\"c30%50",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
+  },
+  {
+    command: "!delcomm",
+    response: "#deleteCommand",
+    description: "Deletes a command. You cannot delete default commands (disable them instead)",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
   }
 ]
 

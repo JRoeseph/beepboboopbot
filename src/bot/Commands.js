@@ -17,7 +17,11 @@ class Commands {
   }
 
   doesCommandExist(command) {
-    return !!this.commands[command]?.isEnabled;
+    return !!this.commands[command];
+  }
+
+  isCommandEnabled(command) {
+    return this.commands[command].isEnabled;
   }
 
   isOnCooldown(command) {
@@ -47,6 +51,10 @@ class Commands {
     const command = this.commands[commandName];
     if (command.chanceToRun === undefined) return true;
     else return Math.random() + (0.01 * command.chanceToRun) > 1;
+  }
+
+  deleteCommand(commandName) {
+    delete this.commands[commandName];
   }
 }
 
