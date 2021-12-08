@@ -75,7 +75,7 @@ class Streamer {
 
   async getUserLevel(username) {
     const userDoc = await this.userInfo.findOne({username: username.toLowerCase()}).lean();
-    const rank = (await this.userInfo.countDocuments({xp: {$gt: userDoc.xp}}))+1;
+    const rank = (await this.userInfo.countDocuments({xp: {$gt: userDoc.xp}, xpEnabled: true}))+1;
     const requiredXP = 16*(userDoc.level+1)*(userDoc.level+1)+100*(userDoc.level+1)-16;
     return {xp: userDoc.xp, requiredXP, level: userDoc.level, rank};
   }
@@ -89,6 +89,9 @@ class Streamer {
       await this.createUser(userid, username);
       userDoc = await this.userInfo.findOne({'user_id': userid})
     }
+    if (!userDoc.xpEnabled) {
+      return;
+    }
     userDoc.xp += xp;
     const xpRequired = (userDoc.level+1)*(userDoc.level+1)*16+100*(userDoc.level+1)-16;
     if (userDoc.xp >= xpRequired) {
@@ -98,6 +101,21 @@ class Streamer {
       }
     }
     userDoc.save();
+  }
+
+  async toggleUserXP(username) {
+    const userDoc = await this.userInfo.findOne({username: username.toLowerCase()})
+    if (!userDoc) {
+      this.client.say(`User not found. User must have chatted in the past`);
+      return;
+    }
+    userDoc.xpEnabled = !userDoc.xpEnabled;
+    userDoc.save();
+    if (userDoc.xpEnabled) {
+      this.client.say(`#${this.username}`, `XP has been enabled for ${username}`)
+    } else {
+      this.client.say(`#${this.username}`, `XP has been disabled for ${username}`)
+    }
   }
 
   async createUser(userId, username) {

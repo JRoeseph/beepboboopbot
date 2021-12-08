@@ -147,6 +147,16 @@ const defaultCommands = [
     modOnly: false,
     cooldown: 30,
     defaultCommand: true,
+  },
+  {
+    command: "!toggleuserxp",
+    response: "#toggleUserXP",
+    description: "Toggles whether or not a user gains xp and is tracked on the leaderboard",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
   }
 ]
 

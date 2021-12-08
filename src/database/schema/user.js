@@ -8,6 +8,7 @@ const UserInfo = new Schema({
   level: Number,
   rewardTokens: Number,
   customStreamerStuff: Object,
+  xpEnabled: Boolean,
 });
 
 module.exports = UserInfo;

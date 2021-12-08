@@ -25,7 +25,7 @@ const profilePage = async (req, res, next) => {
   try {
     const streamer = streamers.getStreamer(req.params.streamer);
     const usersModel = await streamer.getUsers();
-    const users = await usersModel.find().sort({xp: -1}).lean();
+    const users = await usersModel.find({xpEnabled: {$ne: false}}).sort({xp: -1}).lean();
     let currRank = 0;
     users.forEach((user) => {
       const xpRequired = 16*(user.level+1)*(user.level+1)+100*(user.level+1)-16;

@@ -45,6 +45,7 @@ class Commands {
         response(client, msgInfo, streamer)
         command.currentCooldown = command.cooldown;
     }
+    console.log(`* Executed ${commandName} command`);
   }
 
   randomChance(commandName) {

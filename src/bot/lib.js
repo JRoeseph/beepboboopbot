@@ -17,12 +17,10 @@ const dadJoke = (client, msgInfo, streamer) => {
   const nameFirst = msgInfo.msg.substring(mindex+1);
   const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
   client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
-  console.log(`* ${msgInfo.context.username} just got dad joked`)
 }
 
 const ping = (client, msgInfo, streamer) => {
   client.say(msgInfo.target, 'Pong!');
-  console.log('* Executed "!ping" command');
 }
 
 const setTitle = async (client, msgInfo, streamer) => {
@@ -39,7 +37,6 @@ const setTitle = async (client, msgInfo, streamer) => {
       }
     })
     client.say(msgInfo.target, `Title has been set to: ${title}`);
-    console.log('* Executed "!setTitle" command');
   } catch (err) {
     console.error(`ERROR CHANGING TITLES: ${err}`)
   }
@@ -70,7 +67,6 @@ const setCategory = async (client, msgInfo, streamer) => {
       }
     })
     client.say(msgInfo.target, `Category has been set to: ${category}`);
-    console.log('* Executed "!setCategory" command');
   } catch (err) {
     console.error(`ERROR CHANGING CATEGORIES: ${err}`)
   }
@@ -103,7 +99,6 @@ const updateDefaultCommands = async (client, msgInfo, streamer) => {
   await streamerConfig.save();
   streamer.syncCommands(streamerConfig);
   client.say(msgInfo.target, `All new default commands have been added`);
-  console.log('* Executed "!updateDefaultCommands" command');
 }
 
 const toggleLevelUpNotifications = async (client, msgInfo, streamer) => {
@@ -149,9 +144,9 @@ const addCommand = async (client, msgInfo, streamer) => {
       } else if (argument === 'a') {
         arguments.modOnly = false;
       } else if (argument.startsWith('c')) {
-        arguments.cooldown = argument.substring(1) - 0;
+        arguments.cooldown = Number(argument.substring(1));
       } else if (argument.startsWith('%')) {
-        arguments.chanceToRun = argument.substring(1) - 0;
+        arguments.chanceToRun = Number(argument.substring(1));
       } else if (argument.startsWith('d')) {
         arguments.description = argument.substring(2, argument.length-1);
       }
@@ -258,6 +253,10 @@ const getProfileURL = (client, msgInfo, streamer) => {
   client.say(msgInfo.target, `The XP leaderboard and commands can be found here: https://beepboboopbot.herokuapp.com/${streamer.username}`);
 }
 
+const toggleUserXP = (client, msgInfo, streamer) => {
+  streamer.toggleUserXP(removeCommand(msgInfo.msg));
+}
+
 module.exports = {
   dadJoke,
   ping,
@@ -273,4 +272,5 @@ module.exports = {
   toggleCommand,
   addCommand,
   deleteCommand,
+  toggleUserXP, 
 }
