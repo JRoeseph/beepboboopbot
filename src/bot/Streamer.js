@@ -89,7 +89,7 @@ class Streamer {
       await this.createUser(userid, username);
       userDoc = await this.userInfo.findOne({'user_id': userid})
     }
-    if (!userDoc.xpEnabled) {
+    if (userDoc.xpEnabled === false) {
       return;
     }
     userDoc.xp += xp;
@@ -153,6 +153,20 @@ class Streamer {
   async addCommand(commandInfo) {
     this.streamerConfig.commands.push(commandInfo);
     await this.streamerConfig.save();
+    this.syncCommands();
+  }
+
+  async editCommand(commandName, newArguments, newResponse) {
+    const commandObj = this.streamerConfig.find((command) => command.command === commandName);
+    if (commandObj.defaultCommand && newResponse) {
+      return `You cannot edit the response of a default command`;
+    }
+    const argumentKeys = Object.keys(newArguments);
+    argumentKeys.forEach((argument) => {
+      commandObj[argument] = newArguments[argument];
+    });
+    commandObj.response = newReponse;
+    this.streamerConfig.save();
     this.syncCommands();
   }
 
