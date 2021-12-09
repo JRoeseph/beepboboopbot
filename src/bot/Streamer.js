@@ -157,7 +157,7 @@ class Streamer {
   }
 
   async editCommand(commandName, newArguments, newResponse) {
-    const commandObj = this.streamerConfig.find((command) => command.command === commandName);
+    const commandObj = this.streamerConfig.commands.find((command) => command.command === commandName);
     if (commandObj.defaultCommand && newResponse) {
       return `You cannot edit the response of a default command`;
     }
@@ -165,9 +165,12 @@ class Streamer {
     argumentKeys.forEach((argument) => {
       commandObj[argument] = newArguments[argument];
     });
-    commandObj.response = newReponse;
+    if (newResponse) {
+      commandObj.response = newResponse;
+    }
     this.streamerConfig.save();
     this.syncCommands();
+    return `Edited command ${commandName}`;
   }
 
   hasCommand(commandName) {

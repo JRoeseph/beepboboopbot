@@ -132,26 +132,32 @@ const addCommand = async (client, msgInfo, streamer) => {
   };
   let response;
   if (divide[1].startsWith('-')) {
-    const argumentsString = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/)[0];
-    const argumentsSeparated = argumentsString.match(/i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+)/g);
-    argumentsSeparated.forEach((argument) => {
-      if (argument === 'i') {
-        arguments.showInCommands = false;
-      } else if (argument === 'v') {
-        arguments.showInCommands = true;
-      } else if (argument === 'm') {
-        arguments.modOnly = true;
-      } else if (argument === 'a') {
-        arguments.modOnly = false;
-      } else if (argument.startsWith('c')) {
-        arguments.cooldown = Number(argument.substring(1));
-      } else if (argument.startsWith('%')) {
-        arguments.chanceToRun = Number(argument.substring(1));
-      } else if (argument.startsWith('d')) {
-        arguments.description = argument.substring(2, argument.length-1);
-      }
-    })
-    response = noCommand.substring(newCommand.length + argumentsString.length + 2);
+    const argumentsRegex = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/);
+    if (argumentsRegex) {
+      const argumentsString = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/)[0];
+      const argumentsSeparated = argumentsString.match(/i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+)/g);
+      argumentsSeparated.forEach((argument) => {
+        if (argument === 'i') {
+          arguments.showInCommands = false;
+        } else if (argument === 'v') {
+          arguments.showInCommands = true;
+        } else if (argument === 'm') {
+          arguments.modOnly = true;
+        } else if (argument === 'a') {
+          arguments.modOnly = false;
+        } else if (argument.startsWith('c')) {
+          arguments.cooldown = Number(argument.substring(1));
+        } else if (argument.startsWith('%')) {
+          arguments.chanceToRun = Number(argument.substring(1));
+        } else if (argument.startsWith('d')) {
+          arguments.description = argument.substring(2, argument.length-1);
+        }
+      })
+      response = noCommand.substring(newCommand.length + argumentsString.length + 2);
+    } else {
+      client.say(msgInfo.target, 'Invalid command arguments');
+      return;
+    }
   } else {
     response = noCommand.substring(newCommand.length + 1);
   }
@@ -257,6 +263,50 @@ const toggleUserXP = (client, msgInfo, streamer) => {
   streamer.toggleUserXP(removeCommand(msgInfo.msg));
 }
 
+const editCommand = async (client, msgInfo, streamer) => {
+  const noCommand = removeCommand(msgInfo.msg);
+  const divide = noCommand.split(' ');
+  const existingCommand = divide[0];
+  if (!streamer.hasCommand(existingCommand)) {
+    client.say(msgInfo.target, "That command doesn't exist.");
+    return;
+  }
+  const arguments = {};
+  let response;
+  if (divide[1].startsWith('-')) {
+    const argumentsRegex = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/);
+    if (argumentsRegex) {
+      const argumentsString = noCommand.match(/-(i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+))+/)[0];
+      const argumentsSeparated = argumentsString.match(/i|v|m|a|(d"[\w .,'%$#@\(\)&)+]+")|(c\d+)|(%\d+)/g);
+      argumentsSeparated.forEach((argument) => {
+        if (argument === 'i') {
+          arguments.showInCommands = false;
+        } else if (argument === 'v') {
+          arguments.showInCommands = true;
+        } else if (argument === 'm') {
+          arguments.modOnly = true;
+        } else if (argument === 'a') {
+          arguments.modOnly = false;
+        } else if (argument.startsWith('c')) {
+          arguments.cooldown = Number(argument.substring(1));
+        } else if (argument.startsWith('%')) {
+          arguments.chanceToRun = Number(argument.substring(1));
+        } else if (argument.startsWith('d')) {
+          arguments.description = argument.substring(2, argument.length-1);
+        }
+      })
+      response = noCommand.substring(existingCommand.length + argumentsString.length + 2);
+    } else {
+      client.say(msgInfo.target, 'Invalid command arguments');
+      return;
+    }
+  } else {
+    response = noCommand.substring(existingCommand.length + 1);
+  }
+  const botResponse = await streamer.editCommand(existingCommand, arguments, response);
+  client.say(msgInfo.target, botResponse);
+} 
+
 module.exports = {
   dadJoke,
   ping,
@@ -273,4 +323,5 @@ module.exports = {
   addCommand,
   deleteCommand,
   toggleUserXP, 
+  editCommand
 }

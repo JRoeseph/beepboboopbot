@@ -157,6 +157,16 @@ const defaultCommands = [
     modOnly: true,
     cooldown: 0,
     defaultCommand: true,
+  },
+  {
+    command: "!editcomm",
+    response: "#editCommand",
+    description: "Edits the command with new arguments (same arguments as !addcomm) and changes response",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
   }
 ]
 
