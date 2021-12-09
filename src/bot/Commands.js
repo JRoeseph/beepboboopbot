@@ -1,5 +1,3 @@
-const lib = require('./lib');
-
 class Commands {
   init(commands) {
     this.commands = commands;

@@ -1,5 +1,4 @@
 const axios = require('axios');
-const db = require('../database');
 const constants = require('./constants')
 
 // This is janky, but it avoids a circular dependency
@@ -14,9 +13,13 @@ const removeCommand = (message) => {
 
 const dadJoke = (client, msgInfo, streamer) => {
   const mindex = msgInfo.msg.toLowerCase().indexOf('m');
-  const nameFirst = msgInfo.msg.substring(mindex+1);
+  const nameFirst = msgInfo.msg.substring(mindex+2);
   const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
-  client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
+  if (name === "BeepBoBoopBot") {
+    client.say(msgInfo.target, `You fool. You imbecile. Did you think you just did something there? There can only one BeepBoBoopBot. You are an imposter. You are nothing. I am the one true BeepBoBoopBot.`)
+  } else {
+    client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
+  }
 }
 
 const ping = (client, msgInfo, streamer) => {
@@ -89,8 +92,7 @@ const getLevel = async (client, msgInfo, streamer) => {
 }
 
 const updateDefaultCommands = async (client, msgInfo, streamer) => {
-  const streamerInfo = db.getConfig();
-  const streamerConfig = await streamerInfo.findOne({username: streamer.username});
+  const streamerConfig = await streamer.streamerInfo.findOne({username: streamer.username});
   constants.defaultCommands.forEach((command) => {
     if (!streamerConfig.commands.find((streamerCommand) => streamerCommand.command === command.command)) {
       streamerConfig.commands.push(command);
@@ -199,7 +201,8 @@ const grantXp = () => {
         delete activeChatters[user][stream];
       }
       if (xp > 0) {
-        streamer.addXp(user, xp);
+        // The if statement seems random here, but it's for the edge case when someone removes the bot
+        if (streamer) streamer.addXp(user, xp);
       }
     })
     if (Object.keys(activeChatters[user]).length === 0) {

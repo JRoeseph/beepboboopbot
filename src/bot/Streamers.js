@@ -1,12 +1,18 @@
-const db = require('../database');
 const Streamer = require('./Streamer');
 const axios = require('axios');
 const CryptoJS = require('crypto-js');
 const constants = require('./constants');
+const mongoose = require('mongoose');
+const schema = require('./schema');
 
 class Streamers {
   async init() {
-    const streamerInfo = db.getConfig();
+    try {
+      await mongoose.connect(process.env.MONGO_URL);
+      this.streamerInfo = await mongoose.model('StreamerInfo', schema.streamer, 'StreamerInfo');
+    } catch (err) {
+      console.error(`DB ERROR: ${err}`);
+    }
     let query = {}
     if (process.env.DEV_MODE === 'true') {
       query.username = 'beepboboopbot';
@@ -15,7 +21,7 @@ class Streamers {
         $ne: 'beepboboopbot',
       }
     }
-    const streamerDocs = await streamerInfo.find(query).lean();
+    const streamerDocs = await this.streamerInfo.find(query).lean();
     this.streamers = [];
 
     const apiQuery = streamerDocs.reduce((concat, streamer) => {
@@ -33,7 +39,7 @@ class Streamers {
     })
     await Promise.all(streamerDocs.map(async (doc) => {
       const streamerObj = new Streamer();
-      await streamerObj.init(doc.broadcaster_id, idToUsername[doc.broadcaster_id]);
+      await streamerObj.init(doc.broadcaster_id, idToUsername[doc.broadcaster_id], this.streamerInfo);
       this.streamers.push(streamerObj);
     }));
   }
@@ -64,13 +70,14 @@ class Streamers {
           'Authorization': `Bearer ${tokenResponse.data.access_token}`,
         }
       });
-    const streamerInfo = db.getConfig();
     const username = usernameResponse.data.data[0].login;
-    await streamerInfo.deleteOne({username});
-    const streamerIndex = this.streamers.find((streamer) => {streamer.username === username});
-    await this.streamers[streamerIndex].getUsers().drop();
+    await this.streamerInfo.deleteOne({username});
+    const streamerIndex = this.streamers.findIndex((streamer) => streamer.username === username);
+    const usersCollection = this.streamers[streamerIndex].getUsers();
+    await usersCollection.collection.drop();
     delete this.streamers[streamerIndex];
     this.streamers.splice(streamerIndex, 1);
+    this.client.part(username);
   }
 
   async addStreamer(code) {
@@ -83,19 +90,21 @@ class Streamers {
             'Authorization': `Bearer ${tokenResponse.data.access_token}`,
           }
         });
-      const streamerInfo = db.getConfig();
       const username = usernameResponse.data.data[0].login
       const broadcaster_id = usernameResponse.data.data[0].id;
       const encryptedRefreshToken = await CryptoJS.AES.encrypt(tokenResponse.data.refresh_token, process.env.REFRESH_TOKEN_ENCRYPTION_KEY).toString()
-      await streamerInfo.create({
+      await this.streamerInfo.create({
         username,
         broadcaster_id,
         encryptedRefreshToken,
+        notifyLevelUp: true,
         commands: constants.defaultCommands,
       });
       const streamerObj = new Streamer();
-      await streamerObj.init(username);
+      await streamerObj.init(broadcaster_id, username, this.streamerInfo);
       this.streamers.push(streamerObj);
+      streamerObj.addClient(this.client);
+      this.client.join(username)
     } catch (err) {
       console.error(`ERROR ADDING STREAMER: ${err}`)
     }
@@ -103,6 +112,7 @@ class Streamers {
 
   addClients(client) {
     this.streamers.forEach((streamer) => streamer.addClient(client));
+    this.client = client;
   }
 }
 

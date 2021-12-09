@@ -9,7 +9,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
   try {
     if (self) return; 
     const streamer = streamers.getStreamer(target.substring(1));
-    if (!streamer.isLive && process.env.DEV_MODE === 'false') return;
+    if (!streamer?.isLive && process.env.DEV_MODE === 'false' && target.substring(1) !== 'beepboboopboy') return;
 
     lib.setActive(context['user-id'], context.username, target.substring(1))
 
@@ -29,8 +29,6 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
       }
     }
 
-    // Obviously, if it's not a command we don't care
-    if (!msg.startsWith('!')) return;
     const commandName = msg.split(' ')[0];
     streamer.runCommand(commandName.toLowerCase(), {target, context, msg, self})
   } catch (err) {

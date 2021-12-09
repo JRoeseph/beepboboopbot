@@ -1,19 +1,19 @@
-const axios = require('axios');
-const db = require('../database');
 const Commands = require('./Commands');
 const lib = require('./lib');
 const CryptoJS = require('crypto-js');
 const constants = require('./constants');
+const mongoose = require('mongoose');
+const schema = require('./schema');
 
 class Streamer {
   // Initialization for streamer on bot startup
-  async init(broadcaster_id, username) {
+  async init(broadcaster_id, username, streamerInfo) {
     this.broadcaster_id = broadcaster_id;
     this.isLive = true;
+    this.streamerInfo = streamerInfo;
     try {
-      const streamerDocs = db.getConfig();
-      this.userInfo = db.getStreamer(broadcaster_id);
-      this.streamerConfig = await streamerDocs.findOne({broadcaster_id});
+      this.userInfo = await mongoose.model(`bc${broadcaster_id}`, schema.user, `bc${broadcaster_id}`);;
+      this.streamerConfig = await this.streamerInfo.findOne({broadcaster_id});
       const decryptedBytes = await CryptoJS.AES.decrypt(this.streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
       this.username = this.streamerConfig.username;
@@ -65,7 +65,7 @@ class Streamer {
     this.commands.init(startingCommands);
   }
 
-  async getUsers() {
+  getUsers() {
     return this.userInfo;
   }
   
@@ -96,7 +96,8 @@ class Streamer {
     const xpRequired = (userDoc.level+1)*(userDoc.level+1)*16+100*(userDoc.level+1)-16;
     if (userDoc.xp >= xpRequired) {
       userDoc.level++;
-      if (this.notifyLevelUp) {
+      // We do !== false in the cases where it doesn't exist for some reason so it defaults to true
+      if (this.notifyLevelUp !== false) {
         this.client.say(`#${this.username}`, `/me > ${username} just leveled up in ${this.username} to level ${userDoc.level}!`)
       }
     }

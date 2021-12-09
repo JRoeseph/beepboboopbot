@@ -2,11 +2,9 @@ const tmi = require('tmi.js');
 const handlers = require('./handlers.js')
 const streamers = require('./Streamers');
 const lib = require('./lib');
-const db = require('../database');
 
 const initialize = async () => {
   try {
-    await db.init();
     await streamers.init();
     
     const opts = {
