@@ -107,7 +107,7 @@ class Streamer {
   async toggleUserXP(username) {
     const userDoc = await this.userInfo.findOne({username: username.toLowerCase()})
     if (!userDoc) {
-      this.client.say(`#${this.username}`, `User not found. User must have chatted in the past`);
+      this.client.say(`#${this.username}`, `User not found. User must have chatted in the past (since the bot was added)`);
       return;
     }
     if (userDoc.xpEnabled === undefined) {
