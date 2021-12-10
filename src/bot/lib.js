@@ -15,7 +15,7 @@ const dadJoke = (client, msgInfo, streamer) => {
   const mindex = msgInfo.msg.toLowerCase().indexOf('m');
   const nameFirst = msgInfo.msg.substring(mindex+2);
   const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
-  if (name === "BeepBoBoopBot") {
+  if (name.toLowerCase() === "beepboboopbot") {
     client.say(msgInfo.target, `You fool. You imbecile. Did you think you just did something there? There can only one BeepBoBoopBot. You are an imposter. You are nothing. I am the one true BeepBoBoopBot.`)
   } else {
     client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
