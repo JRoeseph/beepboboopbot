@@ -11,37 +11,41 @@ class Streamers {
       await mongoose.connect(process.env.MONGO_URL);
       this.streamerInfo = await mongoose.model('StreamerInfo', schema.streamer, 'StreamerInfo');
     } catch (err) {
-      console.error(`DB ERROR: ${err}`);
+      console.error(`DB ERROR: ${err.stack}`);
     }
-    let query = {}
-    if (process.env.DEV_MODE === 'true') {
-      query.username = 'beepboboopbot';
-    } else {
-      query.username = {
-        $ne: 'beepboboopbot',
-      }
-    }
-    const streamerDocs = await this.streamerInfo.find(query).lean();
-    this.streamers = [];
-
-    const apiQuery = streamerDocs.reduce((concat, streamer) => {
-      return concat + `id=${streamer.broadcaster_id}&`
-    }, '?');
-    const usernameCheck = await axios.get(`https://api.twitch.tv/helix/users${apiQuery.substring(0, apiQuery.length-1)}`, {
-        headers: {
-          'Client-Id': process.env.CLIENT_ID,
-          'Authorization': `Bearer ${process.env.API_TOKEN}`,
+    try {
+      let query = {}
+      if (process.env.DEV_MODE === 'true') {
+        query.username = 'beepboboopbot';
+      } else {
+        query.username = {
+          $ne: 'beepboboopbot',
         }
-    });
-    const idToUsername = {};
-    usernameCheck.data.data.forEach((user) => {
-      idToUsername[user.id] = user.login;
-    })
-    await Promise.all(streamerDocs.map(async (doc) => {
-      const streamerObj = new Streamer();
-      await streamerObj.init(doc.broadcaster_id, idToUsername[doc.broadcaster_id], this.streamerInfo);
-      this.streamers.push(streamerObj);
-    }));
+      }
+      const streamerDocs = await this.streamerInfo.find(query).lean();
+      this.streamers = [];
+
+      const apiQuery = streamerDocs.reduce((concat, streamer) => {
+        return concat + `id=${streamer.broadcaster_id}&`
+      }, '?');
+      const usernameCheck = await axios.get(`https://api.twitch.tv/helix/users${apiQuery.substring(0, apiQuery.length-1)}`, {
+          headers: {
+            'Client-Id': process.env.CLIENT_ID,
+            'Authorization': `Bearer ${process.env.API_TOKEN}`,
+          }
+      });
+      const idToUsername = {};
+      usernameCheck.data.data.forEach((user) => {
+        idToUsername[user.id] = user.login;
+      })
+      await Promise.all(streamerDocs.map(async (doc) => {
+        const streamerObj = new Streamer();
+        await streamerObj.init(doc.broadcaster_id, idToUsername[doc.broadcaster_id], this.streamerInfo);
+        this.streamers.push(streamerObj);
+      }));
+    } catch (err) {
+      console.error(`STREAMERS INIT ERROR: ${err.stack}`)
+    }
   }
 
   getStreamers() { 
@@ -57,7 +61,7 @@ class Streamers {
         return this.streamers.find((streamer) => streamer.broadcaster_id === id);
       }
     } catch (err) {
-      console.error(`GET STREAMER ERROR: ${err}`)
+      console.error(`GET STREAMER ERROR: ${err.stack}`)
     }
   }
 
@@ -106,7 +110,7 @@ class Streamers {
       streamerObj.addClient(this.client);
       this.client.join(username)
     } catch (err) {
-      console.error(`ERROR ADDING STREAMER: ${err}`)
+      console.error(`ERROR ADDING STREAMER: ${err.stack}`)
     }
   }
 

@@ -30,7 +30,7 @@ class Streamer {
         this.streamerConfig.save();
       };
     } catch (err) {
-      console.error(`STREAMER INIT ERROR: ${err}`);
+      console.error(`STREAMER INIT ERROR: ${err.stack}`);
     }
   }
 

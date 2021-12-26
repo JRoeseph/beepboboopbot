@@ -35,7 +35,7 @@ const initialize = async () => {
     streamers.addClients(client);
     lib.setStreamers(streamers);
   } catch (err) {
-      console.error(`BOT INIT ERROR: ${err}`)
+      console.error(`BOT INIT ERROR: ${err.stack}`)
   }
 }
 

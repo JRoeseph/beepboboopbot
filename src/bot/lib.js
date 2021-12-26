@@ -41,7 +41,7 @@ const setTitle = async (client, msgInfo, streamer) => {
     })
     client.say(msgInfo.target, `Title has been set to: ${title}`);
   } catch (err) {
-    console.error(`ERROR CHANGING TITLES: ${err}`)
+    console.error(`ERROR CHANGING TITLES: ${err.stack}`)
   }
 }
 
@@ -71,7 +71,7 @@ const setCategory = async (client, msgInfo, streamer) => {
     })
     client.say(msgInfo.target, `Category has been set to: ${category}`);
   } catch (err) {
-    console.error(`ERROR CHANGING CATEGORIES: ${err}`)
+    console.error(`ERROR CHANGING CATEGORIES: ${err.stack}`)
   }
 }
 
@@ -227,7 +227,7 @@ const checkIfLive = async (streamers) => {
     streamsInfo.data.data.forEach((streamer)=>liveStreams.push(streamer.user_id));
     streamersArray.forEach((streamer) => streamer.isLive = liveStreams.includes(streamer.broadcaster_id));
   } catch (err) {
-    console.error(`ERROR CHECKING IF LIVE: ${err}`)
+    console.error(`ERROR CHECKING IF LIVE: ${err.stack}`)
   }
 }
 

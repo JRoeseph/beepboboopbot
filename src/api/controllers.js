@@ -67,7 +67,7 @@ const profilePage = async (req, res, next) => {
     });
     res.render('profile', {streamer: streamer.username, users, commands});
   } catch (err) {
-    console.error(`ERROR LOADING PROFILE PAGE: ${err}`);
+    console.error(`ERROR LOADING PROFILE PAGE: ${err.stack}`);
   }
 }
 

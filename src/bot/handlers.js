@@ -32,7 +32,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
     const commandName = msg.split(' ')[0];
     streamer.runCommand(commandName.toLowerCase(), {target, context, msg, self})
   } catch (err) {
-    console.error(`HANDLER ERROR: ${err}`);
+    console.error(`HANDLER ERROR: ${err.stack}`);
   }
 }
 
