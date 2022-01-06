@@ -11,7 +11,7 @@ const onMessageHandler = async (client, target, context, msg, self, streamers) =
     const streamer = streamers.getStreamer(target.substring(1));
 
     // We check if live here to allow/disallow XP gain
-    if (!streamer?.isLive) {
+    if (streamer?.isLive) {
       lib.setActive(context['user-id'], context.username, target.substring(1))
     }
 
