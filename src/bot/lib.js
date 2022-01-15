@@ -121,7 +121,7 @@ const toggleCommand = async (client, msgInfo, streamer) => {
 const addCommand = async (client, msgInfo, streamer) => {
   const noCommand = removeCommand(msgInfo.msg);
   const divide = noCommand.split(' ');
-  const newCommand = divide[0];
+  const newCommand = divide[0].toLowerCase();
   if (streamer.hasCommand(newCommand)) {
     client.say(msgInfo.target, 'This command already exists');
     return;
@@ -269,7 +269,7 @@ const toggleUserXP = (client, msgInfo, streamer) => {
 const editCommand = async (client, msgInfo, streamer) => {
   const noCommand = removeCommand(msgInfo.msg);
   const divide = noCommand.split(' ');
-  const existingCommand = divide[0];
+  const existingCommand = divide[0].toLowerCase();
   if (!streamer.hasCommand(existingCommand)) {
     client.say(msgInfo.target, "That command doesn't exist.");
     return;
