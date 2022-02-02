@@ -14,9 +14,9 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
-    "eslint": "^8.1.0",
-    "express": "^4.17.1",
-    "mongoose": "^6.0.12",
+    "eslint": "^8.8.0",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.10",
     "tmi.js": "^1.8.5"
   },
   "devDependencies": {
