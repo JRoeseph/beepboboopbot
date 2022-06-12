@@ -1,10 +1,13 @@
 const tmi = require('tmi.js');
+const axios = require('axios');
 const handlers = require('./handlers.js')
 const streamers = require('./Streamers');
 const lib = require('./lib');
 
 const initialize = async () => {
   try {
+    const api_token_response = await axios.post(`https://id.twitch.tv/oauth2/token?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`);
+    process.env.API_TOKEN = api_token_response.data.access_token;
     await streamers.init();
     
     const opts = {

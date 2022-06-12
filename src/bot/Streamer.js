@@ -12,7 +12,7 @@ class Streamer {
     this.isLive = true;
     this.streamerInfo = streamerInfo;
     try {
-      this.userInfo = await mongoose.model(`bc${broadcaster_id}`, schema.user, `bc${broadcaster_id}`);;
+      this.userInfo = await mongoose.model(`bc${broadcaster_id}`, schema.user, `bc${broadcaster_id}`);
       this.streamerConfig = await this.streamerInfo.findOne({broadcaster_id});
       const decryptedBytes = await CryptoJS.AES.decrypt(this.streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
