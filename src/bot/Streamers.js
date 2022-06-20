@@ -49,7 +49,7 @@ class Streamers {
   }
 
   getStreamers() { 
-    return this.streamers 
+    return this.streamers;
   };
 
   // We do this so we can retrieve either by broadcaster_id or by username

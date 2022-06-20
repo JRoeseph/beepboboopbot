@@ -15,6 +15,8 @@ const initialize = async () => {
 
   app.get('/addBot', controllers.addBot);
   app.get('/removeBot', controllers.removeBot);
+  app.get('/api/streamers', controllers.streamersAPI)
+  app.get('/api/leaderboard/:streamer', controllers.leaderboardAPI)
   app.get('/:streamer', controllers.profilePage);
 
   app.listen(process.env.PORT || 8004);

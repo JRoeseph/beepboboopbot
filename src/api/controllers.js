@@ -71,8 +71,44 @@ const profilePage = async (req, res, next) => {
   }
 }
 
+const leaderboardAPI = async (req, res, next) => {
+  try {
+    const streamer = streamers.getStreamer(req.params.streamer);
+    if (!streamer) {
+      res.send('Streamer not found');
+      return;
+    }
+    const usersModel = await streamer.getUsers();
+    let sortDir;
+    if (req.query.dir === 'asc') sortDir = 1;
+    else sortDir = -1;
+    let sortObj;
+    if (req.query.sort === 'username') sortObj = {username: sortDir};
+    else sortObj = {xp: sortDir};
+    const users = await usersModel.find({xpEnabled: {$ne: false}}, {'_id': 0, '__v': 0})
+      .sort(sortObj)
+      .skip(req.query.skip)
+      .limit(req.query.limit)
+      .lean();
+    res.send(users);
+  } catch (err) {
+    console.error(`ERROR LOADING LEADERBOARD API: ${err}`);
+  }
+}
+
+const streamersAPI = async (req, res, next) => {
+  try {
+    const streamersList = streamers.getStreamers();
+    res.send(streamersList.map((streamer) => streamer.username));
+  } catch (err) {
+    nsole.error(`ERROR LOADING STREAMERS API: ${err}`);
+  }
+}
+
 module.exports = {
   addBot,
   removeBot,
   profilePage,
+  leaderboardAPI,
+  streamersAPI,
 }
