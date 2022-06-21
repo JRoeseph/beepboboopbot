@@ -105,10 +105,38 @@ const streamersAPI = async (req, res, next) => {
   }
 }
 
+const usercountAPI = async (req, res, next) => {
+  try {
+    const streamer = streamers.getStreamer(req.params.streamer);
+    if (streamer === undefined) {
+      res.send("Streamer not found");
+    }
+    const users = streamer.getUsers();
+    const usercount = await users.countDocuments();
+    res.send(`${usercount}`);
+  } catch (err) {
+    console.error(`ERROR LOADING USERCOUNT API: ${err}`);
+  }
+}
+
+const commandsAPI = async (req, res, next) => {
+  try {
+    const streamer = streamers.getStreamer(req.params.streamer);
+    if (streamer === undefined) {
+      res.send("Streamer not found");
+    }
+    const allCommands = streamer.getCommands();
+    res.send(allCommands);
+  } catch (err) {
+    console.error(`ERROR LOADING COMMANDS API: ${err.stack}`);
+  }
+}
 module.exports = {
   addBot,
   removeBot,
   profilePage,
   leaderboardAPI,
   streamersAPI,
+  usercountAPI,
+  commandsAPI,
 }
