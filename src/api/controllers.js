@@ -131,6 +131,7 @@ const commandsAPI = async (req, res, next) => {
     console.error(`ERROR LOADING COMMANDS API: ${err.stack}`);
   }
 }
+
 module.exports = {
   addBot,
   removeBot,

@@ -6,6 +6,8 @@ const StreamerInfo = new Schema({
   username: String,
   encryptedRefreshToken: String,
   notifyLevelUp: Boolean,
+  hasDadJokes: Boolean,
+  optedOutDadJokes: [String],
   commands: [{
     // Response will either just be a string to return, or a function in lib. Starting with a '#' denotes function
     command: String,

@@ -167,6 +167,26 @@ const defaultCommands = [
     modOnly: true,
     cooldown: 0,
     defaultCommand: true,
+  },
+  {
+    command: "!toggledadjokes",
+    response: "#toggleDadJokes",
+    description: "Toggles the \"Hi [blank], I'm BeepBoBoopBot!\" dad jokes",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
+  },
+  {
+    command: "!optdadjokes",
+    response: "#optDadJokes",
+    description: "Opts an individual user out and into the dad jokes IN THAT STREAMERS CHAT.",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: false,
+    cooldown: 10,
+    defaultCommand: true,
   }
 ]
 

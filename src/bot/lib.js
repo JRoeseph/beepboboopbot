@@ -11,16 +11,16 @@ const removeCommand = (message) => {
   return message.split(' ').splice(1).join(' ');
 }
 
-// const dadJoke = (client, msgInfo, streamer) => {
-//   const mindex = msgInfo.msg.toLowerCase().indexOf('m');
-//   const nameFirst = msgInfo.msg.substring(mindex+2);
-//   const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
-//   if (name.toLowerCase() === "beepboboopbot") {
-//     client.say(msgInfo.target, `You fool. You imbecile. Did you think you just did something there? There can only one BeepBoBoopBot. You are an imposter. You are nothing. I am the one true BeepBoBoopBot.`)
-//   } else {
-//     client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
-//   }
-// }
+const dadJoke = (client, msgInfo, streamer) => {
+  const mindex = msgInfo.msg.toLowerCase().indexOf('m');
+  const nameFirst = msgInfo.msg.substring(mindex+2);
+  const name = nameFirst.endsWith('.') ? nameFirst.substring(0, nameFirst.length - 1) : nameFirst;
+  if (name.toLowerCase() === "beepboboopbot") {
+    client.say(msgInfo.target, `You fool. You imbecile. Did you think you just did something there? There can only one BeepBoBoopBot. You are an imposter. You are nothing. I am the one true BeepBoBoopBot.`)
+  } else {
+    client.say(msgInfo.target, `Hi ${name}, I'm BeepBoBoopBot!`);
+  }
+}
 
 const ping = (client, msgInfo, streamer) => {
   client.say(msgInfo.target, 'Pong!');
@@ -77,14 +77,15 @@ const setCategory = async (client, msgInfo, streamer) => {
 
 const getLevel = async (client, msgInfo, streamer) => {
   let name = removeCommand(msgInfo.msg).toLowerCase();
-  if (name[0] === '@') {
-    name = name.substring(1);
-  }
   let username;
   if (name !== '') {
-    username = name;
+    if (name[0] === '@') {
+      username = name.substring(1);
+    } else {
+      username = name;
+    }
   } else {
-    username = msgInfo.context['username']
+    username = msgInfo.context['username'];
   }
   if (`#${username.toLowerCase()}` === msgInfo.target) {
     client.say(msgInfo.target, `You are the streamer, this might return total xp earned on your channel eventually in the future`);
@@ -317,8 +318,24 @@ const editCommand = async (client, msgInfo, streamer) => {
   client.say(msgInfo.target, botResponse);
 } 
 
+const toggleDadJokes = async (client, msgInfo, streamer) => {
+  if (streamer.toggleDadJokes()) {
+    client.say(msgInfo.target, "Dad jokes have been enabled on this stream.");
+  } else {
+    client.say(msgInfo.target, "Dad jokes have been disabled on this stream.");
+  }
+}
+
+const optDadJokes = async (client, msgInfo, streamer) => {
+  if (await streamer.optDadJokes(msgInfo.context['username'])) {
+    client.say(msgInfo.target, "You have opted out of dad jokes for this stream.");
+  } else {
+    client.say(msgInfo.target, "You have opted into dad jokes for this stream.");
+  }
+}
+
 module.exports = {
-  // dadJoke,
+  dadJoke,
   ping,
   setTitle,
   setCategory,
@@ -333,5 +350,7 @@ module.exports = {
   addCommand,
   deleteCommand,
   toggleUserXP, 
-  editCommand
+  editCommand,
+  toggleDadJokes,
+  optDadJokes,
 }

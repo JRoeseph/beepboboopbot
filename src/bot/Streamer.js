@@ -14,10 +14,13 @@ class Streamer {
     try {
       this.userInfo = await mongoose.model(`bc${broadcaster_id}`, schema.user, `bc${broadcaster_id}`);
       this.streamerConfig = await this.streamerInfo.findOne({broadcaster_id});
+      this.verifyAttributes();
       const decryptedBytes = await CryptoJS.AES.decrypt(this.streamerConfig.encryptedRefreshToken, process.env.REFRESH_TOKEN_ENCRYPTION_KEY);
       this.refreshToken = decryptedBytes.toString(CryptoJS.enc.Utf8);
       this.username = this.streamerConfig.username;
       this.notifyLevelUp = this.streamerConfig.notifyLevelUp;
+      this.hasDadJokes = this.streamerConfig.hasDadJokes;
+      this.optedOutDadJokes = this.streamerConfig.optedOutDadJokes;
       constants.defaultCommands.forEach((command) => {
         if (!this.streamerConfig.commands.find((streamerCommand) => streamerCommand.command === command.command)) {
           this.streamerConfig.commands.push(command);
@@ -196,6 +199,38 @@ class Streamer {
     this.streamerConfig.save();
     this.commands.deleteCommand(commandName);
     return true;
+  }
+
+  async optDadJokes(username) {
+    if (this.optedOutDadJokes.includes(username)) {
+      this.optedOutDadJokes.remove(username);
+      this.streamerConfig.optedOutDadJokes.remove(username);
+      this.streamerConfig.save();
+      return false;
+    } else {
+      this.optedOutDadJokes.push(username);
+      this.streamerConfig.optedOutDadJokes.push(username);
+      this.streamerConfig.save();
+      return true;
+    }
+  }
+
+  async toggleDadJokes() {
+    this.hasDadJokes = !this.hasDadJokes;
+    this.streamerConfig.hasDadJokes = this.hasDadJokes;
+    this.streamerConfig.save();
+    return this.hasDadJokes;
+  }
+
+  async hasDadJokesForUser(username) {
+    if (this.hasDadJokes && !this.optedOutDadJokes.includes(username)) 
+      return true;
+    return false;
+  }
+
+  verifyAttributes() {
+    if (this.streamerConfig.hasDadJokes === undefined) this.streamerConfig.hasDadJokes = false;
+    if (this.streamerConfig.optedOutDadJokes === undefined) this.streamerConfig.optedOutDadJokes = [];
   }
 }
 
