@@ -76,7 +76,10 @@ const setCategory = async (client, msgInfo, streamer) => {
 }
 
 const getLevel = async (client, msgInfo, streamer) => {
-  const name = removeCommand(msgInfo.msg);
+  let name = removeCommand(msgInfo.msg).toLowerCase();
+  if (name[0] === '@') {
+    name = name.substring(1);
+  }
   let username;
   if (name !== '') {
     username = name;
@@ -88,7 +91,11 @@ const getLevel = async (client, msgInfo, streamer) => {
     return;
   }
   const userInfo = await streamer.getUserLevel(username);
-  client.say(msgInfo.target, `${username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`)
+  if (userInfo.xp === -1) {
+    client.say(msgInfo.target, 'User does not exist');
+  } else {
+    client.say(msgInfo.target, `${username}: #${userInfo.rank} - Lv ${userInfo.level} (${userInfo.xp} / ${userInfo.requiredXP} XP)`);
+  }
 }
 
 const updateDefaultCommands = async (client, msgInfo, streamer) => {
