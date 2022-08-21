@@ -319,7 +319,7 @@ const editCommand = async (client, msgInfo, streamer) => {
 } 
 
 const toggleDadJokes = async (client, msgInfo, streamer) => {
-  if (streamer.toggleDadJokes()) {
+  if (await streamer.toggleDadJokes()) {
     client.say(msgInfo.target, "Dad jokes have been enabled on this stream.");
   } else {
     client.say(msgInfo.target, "Dad jokes have been disabled on this stream.");
