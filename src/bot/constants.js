@@ -187,6 +187,26 @@ const defaultCommands = [
     modOnly: false,
     cooldown: 10,
     defaultCommand: true,
+  },
+  {
+    command: "!schedulecommand",
+    response: "#scheduleCommand",
+    description: "Syntax: !schedulecommand command cooldown [offset]. This command schedules a command to be executed every 'cooldown' seconds (minimum 60), after an 'offset' seconds after the stream starts (greater than negative cooldown). Put a cooldown of 0 to have the command execute once per stream.",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0,
+    defaultCommand: true,
+  },
+  {
+    command: "!unschedulecommand",
+    response: "#unscheduleCommand",
+    description: "This command takes a scheduled command as input and removed it from the scheduled commands list",
+    showInCommands: true,
+    isEnabled: true,
+    modOnly: true,
+    cooldown: 0, 
+    defaultCommand: true,
   }
 ]
 

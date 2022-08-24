@@ -334,6 +334,34 @@ const optDadJokes = async (client, msgInfo, streamer) => {
   }
 }
 
+const scheduleCommand = async (client, msgInfo, streamer) => {
+  const message = removeCommand(msgInfo.msg).split(' ');
+  if (message.length != 3) {
+    client.say(msgInfo.target, 'Incorrect number of arguments');
+  } else if (typeof(Number(message[1]).isNaN()|| typeof(Number(message[2]))).isNaN()){
+    client.say(msgInfo.target, 'Second and third parameters must be numbers');
+  } else if (message[1] < 60) {
+    client.say(msgInfo.target, 'Cooldown must be 60 or greater');
+  } else if (message[2] < (0-message[1])) {
+    client.say(msgInfo.target, 'Offset must be greater than the negative of the cooldown');
+  } else {
+    streamer.scheduleCommand(message[0], Number(message[1]), Number(message[2]));
+    client.say(msgInfo.target, 'Command scheduled!');
+  }
+}
+
+const unscheduleCommand = async (client, msgInfo, streamer) => {
+  const command = removeCommand(msgInfo.msg).split(' ');
+  if (command.length != 1) {
+    client.say(msgInfo.target, 'This command only takes one argument');
+  } else {
+    if (streamer.unscheduleCommand(command[0]))
+      client.say(msgInfo.target, 'Command unscheduled!');
+    else
+      client.say(msgInfo.target, 'Command isn\'t scheduled');
+  }
+}
+
 module.exports = {
   dadJoke,
   ping,
@@ -353,4 +381,6 @@ module.exports = {
   editCommand,
   toggleDadJokes,
   optDadJokes,
+  scheduleCommand,
+  unscheduleCommand,
 }

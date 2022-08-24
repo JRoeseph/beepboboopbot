@@ -4,6 +4,7 @@ const CryptoJS = require('crypto-js');
 const constants = require('./constants');
 const mongoose = require('mongoose');
 const schema = require('./schema');
+const { compile } = require('ejs');
 
 class Streamer {
   // Initialization for streamer on bot startup
@@ -21,6 +22,13 @@ class Streamer {
       this.notifyLevelUp = this.streamerConfig.notifyLevelUp;
       this.hasDadJokes = this.streamerConfig.hasDadJokes;
       this.optedOutDadJokes = this.streamerConfig.optedOutDadJokes;
+      this.scheduledCommands = [];
+      this.streamerConfig.scheduledCommands.forEach((command) => this.scheduledCommands.push({
+        command: command.command,
+        cooldown: command.cooldown,
+        currentCooldown: command.cooldown + command.offset,
+        offset: command.offset,
+      }));
       constants.defaultCommands.forEach((command) => {
         if (!this.streamerConfig.commands.find((streamerCommand) => streamerCommand.command === command.command)) {
           this.streamerConfig.commands.push(command);
@@ -46,6 +54,25 @@ class Streamer {
 
   passTimeOnCommands() {
     this.commands.passTime();
+    if (this.isLive) this.advanceScheduledCommands();
+    else if (this.wasLive) this.resetScheduledCommands();
+  }
+
+  advanceScheduledCommands() {
+    this.scheduledCommands.forEach((command) => {
+      if (command.currentCooldown === 0) {
+        command.currentCooldown = command.cooldown;
+        this.runCommand(command.command, {context: {mod: true}, msg: command, self: true, target: `#${this.username}`});
+      }
+      command.currentCooldown--;
+    })
+  }
+
+  resetScheduledCommands() {
+    this.wasLive = false;
+    this.scheduledCommands.forEach((command) => {
+      command.currentCooldown = command.cooldown + command.offset;
+    })
   }
 
   syncCommands() {
@@ -231,6 +258,21 @@ class Streamer {
   verifyAttributes() {
     if (this.streamerConfig.hasDadJokes === undefined) this.streamerConfig.hasDadJokes = false;
     if (this.streamerConfig.optedOutDadJokes === undefined) this.streamerConfig.optedOutDadJokes = [];
+  }
+
+  async scheduleCommand(command, cooldown, offset) {
+    this.streamerConfig.scheduledCommands.push({command, cooldown, offset});
+    this.streamerConfig.save();
+    this.scheduledCommands.push({command, cooldown, currentCooldown: cooldown+offset, offset});
+  }
+
+  async unscheduleCommand(command) {
+    const index = this.scheduledCommands.findIndex((comm) => comm.command === command);
+    if (index === -1) return false;
+    this.scheduledCommands.splice(index, 1);
+    this.streamerConfig.scheduledCommands.splice(index, 1);
+    this.streamerConfig.save();
+    return true;
   }
 }
 

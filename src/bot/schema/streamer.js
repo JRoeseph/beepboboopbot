@@ -8,6 +8,11 @@ const StreamerInfo = new Schema({
   notifyLevelUp: Boolean,
   hasDadJokes: Boolean,
   optedOutDadJokes: [String],
+  scheduledCommands: [{
+    command: String,
+    cooldown: Number,
+    offset: Number,
+  }],
   commands: [{
     // Response will either just be a string to return, or a function in lib. Starting with a '#' denotes function
     command: String,
