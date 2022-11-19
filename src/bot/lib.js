@@ -244,14 +244,6 @@ const checkIfLive = async (streamers) => {
 let secondsSinceStart = -1;
 const everySecond = async (streamers) => {
   secondsSinceStart++;
-  // This is something only the Heroku app needs to do, and that is ping itself so it doesn't fall asleep
-  if (process.env.DEV_MODE === 'false' && secondsSinceStart % 300 === 0) {
-    try {
-      await axios.get('http://beepboboopbot.herokuapp.com');
-    } catch (err) {
-      console.log('Refreshed heroku');
-    }
-  }
   if (secondsSinceStart % 60 === 0) {
     checkIfLive(streamers);
     grantXp();
