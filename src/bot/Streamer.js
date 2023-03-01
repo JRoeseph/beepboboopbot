@@ -274,6 +274,24 @@ class Streamer {
     this.streamerConfig.save();
     return true;
   }
+
+  async getDetails() {
+    const output = {};
+    output.usercount = await this.userInfo.countDocuments();
+    output.totalXP = (await this.userInfo.aggregate([{
+      $group: {
+          _id: '',
+          xp: { $sum: '$xp' }
+      }
+   }, {
+      $project: {
+          _id: 0,
+          xp: '$xp'
+      }
+  }]))[0].xp;
+    output.median = (await this.userInfo.find().sort( {"xp":1} ).skip(output.usercount / 2 - 1).limit(1))[0].xp;
+    return output;
+  }
 }
 
 module.exports = Streamer;

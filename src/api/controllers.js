@@ -105,15 +105,14 @@ const streamersAPI = async (req, res, next) => {
   }
 }
 
-const usercountAPI = async (req, res, next) => {
+const detailsAPI = async (req, res, next) => {
   try {
     const streamer = streamers.getStreamer(req.params.streamer);
     if (streamer === undefined) {
       res.send("Streamer not found");
     }
-    const users = streamer.getUsers();
-    const usercount = await users.countDocuments();
-    res.send(`${usercount}`);
+    const output = await streamer.getDetails();
+    res.send(output);
   } catch (err) {
     console.error(`ERROR LOADING USERCOUNT API: ${err}`);
   }
@@ -138,6 +137,6 @@ module.exports = {
   profilePage,
   leaderboardAPI,
   streamersAPI,
-  usercountAPI,
+  detailsAPI,
   commandsAPI,
 }

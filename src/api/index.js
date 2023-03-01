@@ -19,7 +19,7 @@ const initialize = async () => {
   app.get('/removeBot', controllers.removeBot);
   app.get('/api/streamers', controllers.streamersAPI)
   app.get('/api/:streamer/leaderboard', controllers.leaderboardAPI);
-  app.get('/api/:streamer/usercount', controllers.usercountAPI);
+  app.get('/api/:streamer/details', controllers.detailsAPI);
   app.get('/api/:streamer/commands', controllers.commandsAPI)
   app.get('/:streamer', controllers.profilePage);
 
